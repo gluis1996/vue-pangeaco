@@ -16,4 +16,10 @@ export default [
     icon: { icon: 'ri-file-text-line' },
     roles: ['administrador'], 
   },
+  {
+    title: 'Programacion',
+    to: { name: 'programacion' },
+    icon: { icon: 'ri-file-text-line' },
+    roles: ['administrador'], 
+  },
 ]
