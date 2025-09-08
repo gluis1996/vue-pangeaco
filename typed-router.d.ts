@@ -27,6 +27,7 @@ declare module 'vue-router/auto-routes' {
     'programacion': RouteRecordInfo<'programacion', '/programacion', Record<never, never>, Record<never, never>>,
     'programacion-components-modal-generar': RouteRecordInfo<'programacion-components-modal-generar', '/programacion/components/modal_generar', Record<never, never>, Record<never, never>>,
     'programacion-components-planificador-sidebar': RouteRecordInfo<'programacion-components-planificador-sidebar', '/programacion/components/PlanificadorSidebar', Record<never, never>, Record<never, never>>,
+    'programacion-components-tablaprogramacion': RouteRecordInfo<'programacion-components-tablaprogramacion', '/programacion/components/tablaprogramacion', Record<never, never>, Record<never, never>>,
     'programacion-components-zona-card': RouteRecordInfo<'programacion-components-zona-card', '/programacion/components/ZonaCard', Record<never, never>, Record<never, never>>,
     'reasignacion': RouteRecordInfo<'reasignacion', '/reasignacion', Record<never, never>, Record<never, never>>,
     'reasignacion-components-dialog-registro': RouteRecordInfo<'reasignacion-components-dialog-registro', '/reasignacion/components/dialogRegistro', Record<never, never>, Record<never, never>>,

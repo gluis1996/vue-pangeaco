@@ -52,7 +52,7 @@
 
               <VCol cols="12" v-if="zonas.length">
                 <div class="d-flex justify-end">
-                  <VBtn color="primary" @click="procesarAsignacionTodo">Procesar TODAS las Zonas</VBtn>
+                  <VBtn color="primary" @click="handleProcesarTodo">Procesar TODAS las Zonas</VBtn>
                 </div>
               </VCol>
             </VRow>
@@ -77,9 +77,13 @@
 </template>
 
 <script setup>
+import { inject } from 'vue'    
 import PlanificadorSidebar from './PlanificadorSidebar.vue'
 import ZonaCard from './ZonaCard.vue'
-import { useProgramacion } from '../composables/useProgramacion'
+// import { useProgramacion } from '../composables/useProgramacion'
+
+// 👇 USA LA MISMA INSTANCIA PROVISTA POR index.vue
+const programacion = inject('programacion')
 
 const { isDialogVisible } = defineProps({ isDialogVisible: Boolean })
 const emit = defineEmits(['update:isDialogVisible'])
@@ -97,5 +101,13 @@ const {
   // acciones
   onTipoProgramacionChanged, crearZona, agregarRuta, eliminarRuta,
   eliminarDia, eliminarZona, recalcularZona, procesarAsignacionZona, procesarAsignacionTodo,
-} = useProgramacion()
+} = programacion
+
+
+// 👇 handler para cerrar el modal cuando la API termina ok
+const handleProcesarTodo = async () => {
+  const ok = await procesarAsignacionTodo()
+  if (ok) emit('update:isDialogVisible', false)
+}
+
 </script>
