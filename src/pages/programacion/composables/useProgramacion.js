@@ -62,6 +62,7 @@ export function useProgramacion () {
       error.value = 'Error inesperado al cargar sitios'
       sitiosData.value = []
     } finally {
+      
       loading.value = false
     }
   }
