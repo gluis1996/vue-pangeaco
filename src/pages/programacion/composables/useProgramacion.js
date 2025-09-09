@@ -47,13 +47,15 @@ export function useProgramacion () {
           error.value = 'No se pudo cargar sitios'
         }
       })
-      // Estructura esperada: { status: 'success', data: [...] }
-      const data = Array.isArray(res?.data) ? res.data : []
-      const norm = data.map(it => ({
-        nombre_departamento: String(it.nombre_departamento || '').trim(),
-        nombre_distrito    : String(it.nombre_distrito || '').trim(),
-        nombre_sitio       : String(it.nombre_sitio || '').trim(),
-        cantidad_cto       : Number(it.cantidad_cto || 0),
+      // Estructura esperada: { ok: true, rows: [...] }
+      const rows = Array.isArray(res?.rows) ? res.rows : []
+      const norm = rows.map(it => ({
+        nombre_departamento : String(it.nombre_departamento || '').trim(),
+        cto_depto           : Number(it.cto_depto || 0),
+        nombre_distrito     : String(it.nombre_distrito || '').trim(),
+        cto_distrito        : Number(it.cto_distrito || 0),
+        nombre_sitio        : String(it.nombre_sitio || '').trim(),
+        cto_sitio           : Number(it.cto_sitio || 0),
       }))
       sitiosData.value = norm
       cacheByTipo.set(tipo, norm)
@@ -62,7 +64,7 @@ export function useProgramacion () {
       error.value = 'Error inesperado al cargar sitios'
       sitiosData.value = []
     } finally {
-      
+
       loading.value = false
     }
   }
@@ -103,11 +105,32 @@ export function useProgramacion () {
 
   // CTOs disponibles (por departamento+sitio)
   const ctosDisponibles = computed(() => {
-    const arr = sitiosData.value.filter(s =>
-      s.nombre_departamento === selectedDepartamento.value &&
-      s.nombre_sitio === selectedSitio.value
-    )
-    return arr.reduce((acc, it) => acc + (it.cantidad_cto || 0), 0)
+    const dep = selectedDepartamento.value
+    const sit = selectedSitio.value
+    const dis = selectedDistrito.value
+
+    if (!dep) return 0
+
+    // DEP + SITIO + DISTRITO -> usar cto_distrito
+    if (dep && sit && dis) {
+      const row = sitiosData.value.find(s =>
+        s.nombre_departamento === dep &&
+        s.nombre_sitio === sit &&
+        s.nombre_distrito === dis
+      )
+      return row ? row.cto_distrito : 0
+    }
+
+    // DEP + SITIO (sin distrito) -> usar cto_sitio
+    if (dep && sit) {
+      // Puede haber varias filas del mismo sitio (distritos distintos) con el mismo cto_sitio.
+      // Tomamos la primera coincidencia.
+      const row = sitiosData.value.find(s =>
+        s.nombre_departamento === dep &&
+        s.nombre_sitio === sit
+      )
+      return row ? row.cto_sitio : 0
+    }
   })
 
   // ====== Fechas (convierte "YYYY-MM-DD to YYYY-MM-DD" -> ["d/m/yyyy", ...])
@@ -208,7 +231,7 @@ export function useProgramacion () {
     error.value = null
     console.log(payload)
     try {
-      const res = await $api('programaciones/registrar-programacion-rutas-programacion', {
+      const res = await $api('programaciones/pre-registro-programacion-rutas-programacion', {
         method: 'POST',
         body: payload,
         onResponseError({ response }) {

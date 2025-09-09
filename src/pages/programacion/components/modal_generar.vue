@@ -65,11 +65,13 @@
         <VBtn variant="text" @click="emit('update:isDialogVisible', false)">Cerrar</VBtn>
       </VCardActions>
 
-      <VOverlay :model-value="loading" persistent>
-        <VProgressCircular indeterminate size="48" />
-        <div class="mt-4 text-center">
-          <div class="text-subtitle-1">Procesando solicitud...</div>
-          <div class="text-caption">Por favor espere</div>
+      <VOverlay :model-value="loading" persistent class="d-flex align-center justify-center">
+        <div class="text-center">
+          <VProgressCircular indeterminate size="48" />
+          <div class="mt-4">
+            <div class="text-subtitle-1">Procesando solicitud...</div>
+            <div class="text-caption">Por favor espere</div>
+          </div>
         </div>
       </VOverlay>
     </VCard>

@@ -78,15 +78,29 @@
       class="text-no-wrap"
     />
   </div>
+
+
+  <VOverlay :model-value="showOverlay" persistent class="d-flex align-center justify-center">
+    <div class="text-center">
+      <VProgressCircular indeterminate size="48" />
+      <div class="mt-4">
+        <div class="text-subtitle-1">Procesando solicitud...</div>
+        <div class="text-caption">Por favor espere</div>
+      </div>
+    </div>
+  </VOverlay>
 </template>
 <script setup>
-import { computed } from 'vue'   // 👈 esto faltaba
+import { computed, ref } from 'vue'   // 👈 esto faltaba
 import { VBtn, VCol, VRow } from 'vuetify/components';
 import { $api } from '@/utils/api'
 const props = defineProps({
   apiResp: { type: Object, default: null },  // 👈 JSON completo de la API
   loading: { type: Boolean, default: false },
 })
+
+const showOverlay = ref(false)
+const error = ref(null)
 
 const emit = defineEmits(['update:apiResp']) // 👈 evento para pedir reset
 
@@ -143,7 +157,8 @@ const cancelar = async () => {
   if (!id) return
   try {
     // Aquí iría la llamada a la API para cancelar la programación
-    const res = await $api(`programaciones/eliminar-programacion/${id}`, {
+    showOverlay.value = true
+    const res = await $api(`programaciones/eliminar-pre-programacion/${id}`, {
         method: 'DELETE',
         onResponseError({ response }) {
           console.error('Respuesta API no OK:', response)
@@ -161,14 +176,40 @@ const cancelar = async () => {
 
   } catch (error) {
     console.error('Error al cancelar la programación:', error)
+    error.value = 'Error al cancelar'
+  } finally {
+    showOverlay.value = false
   }
-  console.log('🛑 Cancelar programación:', id)
+
 }
 
-const registrar = () => {
+const registrar =  async() => {
   const seleccionados = props.apiResp?.programacion?.seleccionados || []
   if (!seleccionados.length) return
-  console.log('📦 Registrar seleccionados:', seleccionados.length, 'items')
+
+  try{
+    const pay = props.apiResp;
+    console.log(pay);
+    showOverlay.value = true
+    const response = await $api('programaciones/registra-actualiza-divicau', {
+      method: 'POST',
+      body: pay,
+      onResponseError({ response }) {
+        console.error('Respuesta API no OK:', response)
+        error.value = 'No se pudo registrar la programación'
+      }
+    }) 
+    console.log('Respuesta API registrar:', response);
+    const data = response?.data ?? response
+    if (data.ok) {
+      emit('update:apiResp', null) // 👈 pide al padre que resetee
+    }
+  }catch(e){
+    console.error('Error al registrar la programación:', e)
+    error.value = 'Error al registrar la programación'
+  }finally{
+    showOverlay.value = false
+  }
 }
 
 // ====== Exportar CSV (sin dependencias) ======
@@ -198,26 +239,5 @@ const descargarCSV = () => {
   URL.revokeObjectURL(url)
 }
 
-// ====== Exportar Excel (XLSX) ======
-// Requiere instalar:  pnpm add xlsx   (o npm/yarn)
-// const descargarXLSX = async () => {
-//   const data = items.value
-//   if (!data.length) return
-
-//   const XLSXmod = await import('xlsx')          // carga dinámica
-//   const XLSX = XLSXmod.default || XLSXmod
-
-//   // AOA: primera fila títulos, luego datos en el mismo orden que headers
-//   const aoa = [
-//     headers.map(h => h.title),
-//     ...data.map(row => headers.map(h => row[h.key] ?? '')),
-//   ]
-
-//   const ws = XLSX.utils.aoa_to_sheet(aoa)
-//   const wb = XLSX.utils.book_new()
-//   XLSX.utils.book_append_sheet(wb, ws, 'Programación')
-
-//   XLSX.writeFile(wb, `programacion_${new Date().toISOString().slice(0,10)}.xlsx`)
-// }
 
 </script>
