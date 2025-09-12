@@ -1,3 +1,5 @@
+import { icon } from "@/views/components/badge/demoCodeBadge";
+
 export default [
   {
     title: 'Home',
@@ -17,9 +19,53 @@ export default [
     roles: ['administrador'], 
   },
   {
-    title: 'Programacion',
-    to: { name: 'programacion' },
+    title: 'Progranaciones',
     icon: { icon: 'ri-file-text-line' },
-    roles: ['administrador'], 
+    children: [
+      {
+        title: 'Generar Programacion',
+        to: { name: 'programacion' },
+      },
+      {
+        title: 'Ver Programaciones',
+        to: { name: 'programacion-ver' },
+      }
+    ],
+    roles: ['administrador'],
+  },{
+    title: 'Trabajos',
+    icon: { icon: 'ri-file-text-line' },
+    children: [
+      {
+        title: 'Gestion Ruta',
+        to: { name: 'gestion-ruta' },
+      },
+      {
+        title: 'Trabajo Timbrados',
+        to: { name: 'trabajos-timbrados' },
+        roles: ['operador','administrador'],
+      },
+      {
+        title: 'Trabajo Inspecciones',
+        to: { name: 'trabajos-inspecciones' },
+      }
+    ],
+    roles: ['operador','administrador'],
   },
+  {
+    title: 'Intermodal',
+    icon: { icon: 'ri-file-text-line' },
+    children:[
+      {
+        title: 'Enlaze Inter. B. I.',
+        to: { name: 'intermodal-base-interna' },
+        roles: ['operador','administrador'],
+      },
+            {
+        title: 'Seguimiento FTTH',
+        to: { name: 'gestion-ruta' },
+         roles: ['operador','administrador','tecnico'],
+      }
+    ]
+  }
 ]
