@@ -23,20 +23,20 @@ jobs:
           docker build -f prod.Dockerfile . --tag ghcr.io/gluis1996/vue-pangeaco:latest
           docker push ghcr.io/gluis1996/vue-pangeaco:latest
 
-    deploy:
-      needs: create-docker-images
-      runs-on: ubuntu-latest
-      steps:
-        - name: Install sshpass
-          run: sudo apt-get install -y sshpass
-        
-        - name: SSH into Server
-          run: |
-            sshpass -p ${{secrets.AUTH_PASS}} ssh -o StrictHostKeyChecking=no ${{secrets.AUTH_SERVER}} << EOF
-              cd /root/web-pangeaco/
-              docker login ghcr.io -u gluis1996 -p ${{ secrets.TOKEN_PRO }}
-              docker pull ghcr.io/gluis1996/vue-pangeaco:latest
-              docker stop vue-pangeaco || true
-              docker rm vue-pangeaco || true
-              docker run -d --name vue-pangeaco -p 8080:80 ghcr.io/gluis1996/vue-pangeaco:latest
-            EOF
+  deploy:
+    needs: create-docker-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+      
+      - name: SSH into Server
+        run: |
+          sshpass -p ${{secrets.AUTH_PASS}} ssh -o StrictHostKeyChecking=no ${{secrets.AUTH_SERVER}} << EOF
+            cd /root/web-pangeaco/
+            docker login ghcr.io -u gluis1996 -p ${{ secrets.TOKEN_PRO }}
+            docker pull ghcr.io/gluis1996/vue-pangeaco:latest
+            docker stop vue-pangeaco || true
+            docker rm vue-pangeaco || true
+            docker run -d --name vue-pangeaco -p 8080:80 ghcr.io/gluis1996/vue-pangeaco:latest
+          EOF
