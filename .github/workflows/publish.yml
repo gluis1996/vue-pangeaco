@@ -38,5 +38,9 @@ jobs:
             docker pull ghcr.io/gluis1996/vue-pangeaco:latest
             docker stop vue-pangeaco || true
             docker rm vue-pangeaco || true
-            docker run -d --name vue-pangeaco -p 4545:80 ghcr.io/gluis1996/vue-pangeaco:latest
+            docker run -d \
+            --name vue-pangeaco \
+            -p 4545:80 \
+            --env-file /root/web-pangeaco/.env \
+            ghcr.io/gluis1996/vue-pangeaco:latest
           EOF
