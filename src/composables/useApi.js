@@ -4,6 +4,7 @@ import { destr } from 'destr'
 export const useApi = createFetch({
   baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
   fetchOptions: {
+    credentials: 'include',                // <- ENVÍA COOKIES
     headers: {
       Accept: 'application/json',
     },
