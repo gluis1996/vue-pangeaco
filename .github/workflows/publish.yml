@@ -41,6 +41,5 @@ jobs:
             docker run -d \
             --name vue-pangeaco \
             -p 4545:80 \
-            --env-file /root/web-pangeaco/.env \
             ghcr.io/gluis1996/vue-pangeaco:latest
           EOF
