@@ -15,7 +15,7 @@ COPY . .
 
 # Instala dependencias y construye el proyecto
 RUN pnpm install --frozen-lockfile
-RUN pnpm run build
+RUN pnpm run build -- --minify=false --sourcemap
 
 # Usa Nginx como servidor de producción
 FROM nginx:stable-alpine
