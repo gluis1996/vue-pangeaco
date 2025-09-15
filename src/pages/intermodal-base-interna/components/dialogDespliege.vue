@@ -1,7 +1,7 @@
 <template>
   <VDialog :model-value="open" max-width="600" @update:model-value="v => emit('update:open', v)">
     <VCard>
-      <VCardTitle class="text-h6">Registrar Despliegue</VCardTitle>
+      <VCardTitle class="text-h6">Registrar/Editar Despliegue</VCardTitle>
 
       <VCardText>
         <VRow dense>

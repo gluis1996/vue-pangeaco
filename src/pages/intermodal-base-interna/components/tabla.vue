@@ -9,9 +9,9 @@
     <!-- Columna de acción (slot por key) -->
     <template #item.id_proyecto="{ value }">
       <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDespliegues', value)">Despliegue</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verEstadoAvance', value)">Despliegue</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verEstadoAvance', value)">Estados</VBtn>
       <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDistancia', value)">Distancia</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalle', value)">Ver</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalle', value)">Asignar</VBtn>
     </template>
   </VDataTable>
 </template>
@@ -22,9 +22,6 @@ import dayjs from 'dayjs'
 
 const props = defineProps(['listaproyecto'])
 const emit = defineEmits(['verDetalleDespliegues','verEstadoAvance','verDetalleDistancia','verDetalle'])
-
-const d  = iso => (iso ? dayjs(iso).format('DD/MM/YYYY') : '')
-const dt = iso => (iso ? dayjs(iso).format('DD/MM/YYYY HH:mm') : '')
 
 const headers = [
   { title: "ip",                key: "ip" },

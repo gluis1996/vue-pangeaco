@@ -31,8 +31,7 @@
                 <VCol cols="12" md="4">
                   <VTextField
                     v-model="form.ip"              
-                    label="IP"                     
-                    :rules="[req]"                 
+                    label="IP"
                     density="compact"              
                   />
                 </VCol>
@@ -73,7 +72,6 @@
                   <VTextField
                     v-model="form.uips"
                     label="UIPS"
-                    :rules="[req]"
                     density="compact"
                   />
                 </VCol>
@@ -181,11 +179,11 @@ const formRef = ref(null)
 
 // Modelo reactivo con los campos del formulario
 const form = reactive({
-  ip: '',
+  ip: null,
   eecc: '',
   prioridad: '',
   nodo: '',
-  uips: '',
+  uips: null,
   region: '',
   dpto: '',
   nodo_concentrador: '',
@@ -197,7 +195,7 @@ const req = v => (!!v || v === 0) || 'Requerido'
 // Computado para deshabilitar el botón si a simple vista falta algo.
 // (No reemplaza la validación formal de VForm, solo ayuda a UX del botón)
 const isComplete = computed(() => {
-  const keys = ['ip', 'eecc', 'prioridad', 'nodo', 'uips', 'region', 'dpto', 'nodo_concentrador']
+  const keys = ['eecc', 'prioridad', 'nodo', 'region', 'dpto', 'nodo_concentrador']
   return keys.every(k => form[k] !== '' && form[k] !== null && form[k] !== undefined)
 })
 
@@ -212,11 +210,11 @@ watch(
   v => {
     if (v) {                                  // si se abrió el diálogo
       Object.assign(form, {                   // reseteamos el formulario
-        ip: '',
+        ip: null,
         eecc: '',
         prioridad: '',
         nodo: '',
-        uips: '',
+        uips: null,
         region: '',
         dpto: '',
         nodo_concentrador: '',

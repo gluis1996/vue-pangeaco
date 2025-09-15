@@ -63,8 +63,8 @@ export default [
       },
             {
         title: 'Seguimiento FTTH',
-        to: { name: 'gestion-ruta' },
-         roles: ['operador','administrador','tecnico'],
+        to: { name: 'seguimiento-ftth' },
+         roles: ['administrador','tecnico'],
       }
     ]
   }

@@ -11,7 +11,7 @@
     :listaproyecto="listaprogramacion"
     @verDetalleDespliegues="abrirDialogDespliegue"
     @verEstadoAvance="abrirDialogEstados"
-    @verDetalleDistancia="detalleDistancia"
+    @verDetalleDistancia="abrirDialogDitancias"
     @verDetalle="verDetalle"
   />
 
@@ -42,6 +42,16 @@
     @submit="onEstadosDialogSubmit"
     @cancel="openEstados = false"
   />
+
+  <DialogDistancia 
+  v-model:open="openDistancia"
+  :id-proyecto="idSeleccionado"
+  :initial="detalleDistancia"
+  :is-edit="!!detalleDistancia.aereo"
+  @submit="onDistanciaDialogSubmit"
+  @cancel="openDistancia=false"
+  
+  />
 </template>
 
 <script setup>
@@ -50,16 +60,19 @@ import { VBtn } from 'vuetify/components'
 import RegistroDialog from '@/pages/intermodal-base-interna/components/dialog.vue'
 import DialogDespliegue from '@/pages/intermodal-base-interna/components/dialogDespliege.vue'
 import DialogEstados from '@/pages/intermodal-base-interna/components/dialogEstadoAvance.vue'
+import DialogDistancia from '@/pages/intermodal-base-interna/components/dialogDistancia.vue'
 import Tabla from '@/pages/intermodal-base-interna/components/tabla.vue'
 import { $api } from '@/utils/api'
 
 const listaprogramacion = ref([])
 const open = ref(false)                 // diálogo de registro
 const openDespliegue = ref(false)       // diálogo de despliegue
-const openEstados = ref(false)       // diálogo de despliegue
+const openEstados = ref(false)
+const openDistancia = ref(false)
 const idSeleccionado = ref(null)        // id proyecto para el diálogo
 const detalleDespliegue = ref({})       // datos iniciales para prefill
 const detalleEstadoAvance = ref({})
+const detalleDistancia = ref({})
 
 onMounted(cargarProyecto)
 
@@ -141,10 +154,6 @@ async function abrirDialogDespliegue (id) {
   } catch (e) {
     console.error('Error cargando detalle', e)
   }
-}
-
-function detalleDistancia (id) {
-  console.log('Distancia', id)
 }
 
 function verDetalle (id) {
@@ -274,7 +283,7 @@ function onEstadosDialogSubmit(payload) {
   if (payload.isEdit) {
     console.log('Estamos en editar',payload);
     
-    // editarDespliegue(payload)
+    editarEstados(payload)
   } else {
     console.log('estamos en registrar',payload);
     
@@ -295,6 +304,161 @@ async function registrarEstados(payload) {
   try {
     const response = await $api('internodal/registrar-estado-avance', {
       method: 'POST',
+      body: payloa,
+      onResponseError({response}){
+        console.error('Response datos', response)
+      }
+    })
+    console.log(response);
+    
+    if (response.success) {
+      cargarProyecto
+      console.log('OK');
+      
+    }else{
+      alert(response.error)
+    }
+  } catch (error) {
+    console.error('Error cargando detalle', error);
+  }
+}
+
+async function editarEstados(payload) {
+  // lógica para registrar
+  console.log('Editar estados:', payload)
+  let payloa = {
+    diseno: payload.diseno,
+    pext: payload.pext,
+    integracion_internodal: payload.integracion_internodal,
+  }
+  
+  try {
+    const response = await $api(`internodal/actualizar-estado-avance/${payload.id_proyecto}`, {
+      method: 'PUT',
+      body: payloa,
+      onResponseError({response}){
+        console.error('Response datos', response)
+      }
+    })
+    console.log(response);
+    
+    if (response.success) {
+      cargarProyecto
+      console.log('OK');
+      
+    }else{
+      alert(response.error)
+    }
+  } catch (error) {
+    console.error('Error cargando detalle', error);
+  }
+}
+
+
+/* ========================================== */
+/* ====== Gestines para Distancia ====== */
+/* ========================================== */
+async function abrirDialogDitancias (id) {
+  try {
+    idSeleccionado.value = id
+    console.log('selecion estado ', id);
+    
+    // 1) Carga detalle desde la API para prellenar el diálogo
+    const resp = await $api(`internodal/buscar-distancia/${id}`, { 
+      method: 'GET',
+      onResponseError({response}){
+        console.error(response);
+      } 
+    })
+    // console.log(resp.rows[0].despliegue_enlace_internodal);
+    console.log('total ',resp.rows.length)
+    // detalleDespliegue.value= resp.rows;
+    // Mapea lo que necesites al form del diálogo:
+    if (resp.rows.length > 0) {
+        detalleDistancia.value = {
+          distancia: resp.rows[0].distancia || '',
+          aereo: resp.rows[0].aereo || '',
+          sub_c_red: resp.rows[0].sub_c_red || '',
+          sub_s_red: resp.rows[0].sub_s_red || '',
+          tramo: resp.rows[0].tramo || '',
+        }
+    } else {
+      // Si no hay datos, inicializa vacío
+        detalleDistancia.value = {
+          distancia: '',
+          aereo: '',
+          sub_c_red: '',
+          sub_s_red: '',
+          tramo: '',
+        }
+    }
+    // 2) Abre el diálogo
+    openDistancia.value = true
+  } catch (e) {
+    console.error('Error cargando detalle', e)
+  }
+}
+
+function onDistanciaDialogSubmit(payload) {
+  console.log(payload);
+  
+  if (payload.isEdit) {
+    console.log('Estamos en editar',payload);
+    editarDistancia(payload);
+  } else {
+    console.log('estamos en registrar',payload);
+    registrarDistancia(payload);
+  }
+}
+
+async function registrarDistancia(payload) {
+  // lógica para registrar
+  console.log('Registrar distancia:', payload)
+  let payloa = {
+    proyecto_id: payload.id_proyecto,
+    distancia: payload.distancia,
+    aereo: payload.aereo,
+    sub_c_red: payload.sub_c_red,
+    sub_s_red: payload.sub_s_red,
+    tramo: payload.tramo,
+  }
+  
+  try {
+    const response = await $api('internodal/registrar-distancia', {
+      method: 'POST',
+      body: payloa,
+      onResponseError({response}){
+        console.error('Response datos', response)
+      }
+    })
+    console.log(response);
+    
+    if (response.success) {
+      cargarProyecto
+      console.log('OK');
+      
+    }else{
+      alert(response.error)
+    }
+  } catch (error) {
+    console.error('Error cargando detalle', error);
+  }
+}
+
+async function editarDistancia(payload) {
+  // lógica para registrar
+  console.log('Editar distancia:', payload)
+  let payloa = {
+    distancia: payload.distancia,
+    aereo: payload.aereo,
+    sub_c_red: payload.sub_c_red,
+    sub_s_red: payload.sub_s_red,
+    tramo: payload.tramo,
+  }
+  
+  try {
+    const response = await $api(`internodal/actualizar-distancia/${payload.id_proyecto}`, {
+      method: 'PUT',
       body: payloa,
       onResponseError({response}){
         console.error('Response datos', response)
