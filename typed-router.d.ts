@@ -45,6 +45,8 @@ declare module 'vue-router/auto-routes' {
     'reasignacion-components-tabla': RouteRecordInfo<'reasignacion-components-tabla', '/reasignacion/components/tabla', Record<never, never>, Record<never, never>>,
     'second-page': RouteRecordInfo<'second-page', '/second-page', Record<never, never>, Record<never, never>>,
     'seguimiento-ftth': RouteRecordInfo<'seguimiento-ftth', '/seguimiento-ftth', Record<never, never>, Record<never, never>>,
+    'seguimiento-ftth-components-card-seguimiento': RouteRecordInfo<'seguimiento-ftth-components-card-seguimiento', '/seguimiento-ftth/components/card_seguimiento', Record<never, never>, Record<never, never>>,
+    'seguimiento-ftth-components-tabla': RouteRecordInfo<'seguimiento-ftth-components-tabla', '/seguimiento-ftth/components/tabla', Record<never, never>, Record<never, never>>,
     'trabajos-inspecciones': RouteRecordInfo<'trabajos-inspecciones', '/trabajos-inspecciones', Record<never, never>, Record<never, never>>,
     'trabajos-timbrados': RouteRecordInfo<'trabajos-timbrados', '/trabajos-timbrados', Record<never, never>, Record<never, never>>,
     'trabajos-timbrados-components-date-selector': RouteRecordInfo<'trabajos-timbrados-components-date-selector', '/trabajos-timbrados/components/dateSelector', Record<never, never>, Record<never, never>>,

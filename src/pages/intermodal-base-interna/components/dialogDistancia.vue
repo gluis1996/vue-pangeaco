@@ -28,7 +28,9 @@
           <VCol cols="12" md="6">
             <VTextField v-model="form.tramo" type="number" label="Integracion Intermodal" density="compact" />
           </VCol>
+
         </VRow>
+
       </VCardText>
 
       <VCardActions class="justify-end">
@@ -41,6 +43,7 @@
 
 <script setup>
 import { reactive, watch } from 'vue'
+
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -55,8 +58,9 @@ const defaultForm = () => ({
   aereo: '',
   sub_c_red: '',
   sub_s_red: '',
-  tramo: '',
+  tramo: ''
 })
+
 const form = reactive(defaultForm())
 
 // Reset / Prefill cada vez que cambie initial o idProyecto
@@ -75,8 +79,14 @@ watch(
   }
 )
 
+// Si quieres emitir la fecha en ISO (YYYY-MM-DD) cuando sea fecha:
+
+
 function onSubmit () {
-  emit('submit', { id_proyecto: props.idProyecto, ...form, isEdit: props.isEdit})
+  emit('submit', { 
+                    id_proyecto: props.idProyecto, 
+                    ...form, 
+                    isEdit: props.isEdit})
   emit('update:open', false)
 }
 

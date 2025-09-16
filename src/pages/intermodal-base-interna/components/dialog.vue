@@ -1,129 +1,92 @@
 <!-- src/pages/intermodal-base-interna/components/dialog.vue -->
 <template>
-  <!-- VDialog: diálogo de Vuetify. 
-       v-model="openLocal" enlaza el estado abierto/cerrado a un computed 
-       que a su vez refleja la prop 'open' y emite 'update:open' al padre. -->
   <VDialog v-model="openLocal" max-width="800">
-    <!-- Contenedor principal del diálogo -->
     <VCard>
-      <!-- Título del diálogo -->
       <VCardTitle class="text-h6">Nuevo Registro</VCardTitle>
 
-      <!-- Cuerpo del diálogo -->
       <VCardText>
-        <!-- VForm: agrupa campos y permite validación con validate() -->
         <VForm ref="formRef">
-          <!-- Tabs: navegación por secciones (solo 1 habilitada por ahora) -->
-          <VTabs v-model="tab" class="mb-2">
-            <VTab value="planeamiento">Planeamiento</VTab>
-            <VTab value="planta" disabled>Planta</VTab>
-            <VTab value="plazos-estados" disabled>Plazos - Estados</VTab>
-            <VTab value="medidas" disabled>Medidas</VTab>
-          </VTabs>
+          <VRow class="mt-2">
+            <!-- Proyecto -->
+            <VCol cols="12" md="4"><VTextField v-model="form.ip" label="IP" density="compact"/></VCol>
+            <VCol cols="12" md="4"><VTextField v-model="form.eecc" label="EECC" :rules="[req]" density="compact"/></VCol>
+            <VCol cols="12" md="4"><VTextField v-model="form.prioridad" type="number" label="Prioridad" :rules="[req]" density="compact"/></VCol>
 
-          <!-- VWindow: renderiza el contenido de la pestaña activa -->
-          <VWindow v-model="tab" :touch="false" class="disable-tab-transition">
-            <!-- Item: contenido para la pestaña 'planeamiento' -->
-            <VWindowItem value="planeamiento">
-              <!-- Layout responsivo -->
-              <VRow class="mt-2">
-                <!-- Campo IP (requerido) -->
-                <VCol cols="12" md="4">
+            <VCol cols="12" md="4"><VTextField v-model="form.nodo" label="Nodo" :rules="[req]" density="compact"/></VCol>
+            <VCol cols="12" md="4"><VTextField v-model="form.uips" label="UIPS" density="compact"/></VCol>
+
+            <VCol cols="12" md="4">
+              <VSelect v-model="form.region" :items="options.regiones" label="Región" :rules="[req]" density="compact"/>
+            </VCol>
+            <VCol cols="12" md="4">
+              <VSelect v-model="form.dpto" :items="options.departamentos" label="Departamento" :rules="[req]" density="compact"/>
+            </VCol>
+            <VCol cols="12" md="4">
+              <VSelect v-model="form.nodo_concentrador" :items="options.nodosConcentrador" label="Nodo concentrador" :rules="[req]" density="compact"/>
+            </VCol>
+
+            <!-- Medidas -->
+            <VCol cols="12"><h5>Medidas</h5></VCol>
+            <VCol cols="12">
+              <VAutocomplete
+                v-model="form.tipos_trabajos"
+                :items="options.tipos_trabajos"
+                item-title="nombre"
+                item-value="id_tipo"
+                chips
+                multiple
+                label="Tipos de Trabajo"
+                placeholder="Seleccionar"
+              />
+            </VCol>
+
+            <!-- Especial: PRUEBAS -->
+            <VCol cols="12" md="6" v-if="form.tipos_trabajos.includes(SPECIAL_IDS.PRUEBAS)">
+              <VTextField
+                v-model="form.pruebas.cantidad_cto"
+                label="Cantidad CTO (PRUEBAS)"
+                type="number"
+                density="compact"
+              />
+            </VCol>
+
+            <!-- Especial: INSTALACION PASIVOS -->
+            <VCol cols="12" md="6" v-if="form.tipos_trabajos.includes(SPECIAL_IDS.PASIVOS)">
+              <VTextField
+                v-model="form.pasivos.total_mufa"
+                label="Total MUFA (INSTALACION PASIVOS)"
+                type="number"
+                density="compact"
+              />
+            </VCol>
+
+            <!-- Genéricas (excluye PRUEBAS y PASIVOS) -->
+            <VCol cols="12">
+              <VRow v-if="medidasGenericas.length">
+                <VCol
+                  v-for="m in medidasGenericas"
+                  :key="m.id_tipo"
+                  cols="12" md="6"
+                >
                   <VTextField
-                    v-model="form.ip"              
-                    label="IP"
-                    density="compact"              
-                  />
-                </VCol>
-
-                <!-- Campo EECC (requerido) -->
-                <VCol cols="12" md="4">
-                  <VTextField
-                    v-model="form.eecc"
-                    label="EECC"
-                    :rules="[req]"
+                    v-model="m.valor"
+                    :label="m.nombre"
+                    :suffix="m.unidad"
+                    type="number"
                     density="compact"
-                  />
-                </VCol>
-
-                <!-- Campo Prioridad numérica (requerido) -->
-                <VCol cols="12" md="4">
-                  <VTextField
-                    v-model="form.prioridad"
-                    label="Prioridad"
-                    type="number"                 
-                    :rules="[req]"
-                    density="compact"
-                  />
-                </VCol>
-
-                <!-- Campo Nodo (requerido) -->
-                <VCol cols="12" md="4">
-                  <VTextField
-                    v-model="form.nodo"
-                    label="Nodo"
-                    :rules="[req]"
-                    density="compact"
-                  />
-                </VCol>
-
-                <!-- Campo UIPS (requerido) -->
-                <VCol cols="12" md="4">
-                  <VTextField
-                    v-model="form.uips"
-                    label="UIPS"
-                    density="compact"
-                  />
-                </VCol>
-
-                <!-- Select Región (requerido) -->
-                <VCol cols="12" md="4">
-                  <VSelect
-                    v-model="form.region"
-                    :items="options.regiones"    
-                    label="Región"
-                    :rules="[req]"
-                    density="compact"
-                  />
-                </VCol>
-
-                <!-- Select Departamento (requerido) -->
-                <VCol cols="12" md="4">
-                  <VSelect
-                    v-model="form.dpto"
-                    :items="options.departamentos"
-                    label="Departamento"
-                    :rules="[req]"
-                    density="compact"
-                  />
-                </VCol>
-
-                <!-- Select Nodo concentrador (requerido) -->
-                <VCol cols="12" md="4">
-                  <VSelect
-                    v-model="form.nodo_concentrador"
-                    :items="options.nodosConcentrador"
-                    label="Nodo concentrador"
-                    :rules="[req]"
-                    density="compact"
+                    placeholder="Ingrese valor"
                   />
                 </VCol>
               </VRow>
-            </VWindowItem>
-          </VWindow>
+            </VCol>
+          </VRow>
         </VForm>
       </VCardText>
 
-      <!-- Separador visual -->
       <VDivider />
 
-      <!-- Acciones del diálogo -->
       <VCardText class="d-flex gap-4">
-        <!-- Submit: deshabilitado si visualmente falta algo; 
-             además, onSubmit valida formalmente con VForm.validate() -->
         <VBtn :disabled="!isComplete" @click="onSubmit">Submit</VBtn>
-
-        <!-- Cancel: cierra el diálogo y avisa al padre -->
         <VBtn color="secondary" variant="tonal" @click="onCancel">Cancel</VBtn>
       </VCardText>
     </VCard>
@@ -131,53 +94,31 @@
 </template>
 
 <script setup>
-// Importamos utilidades de Vue
 import { reactive, ref, watch, computed } from 'vue'
 
-/* =====================  PROPS & EMITS (sin defineModel)  ===================== */
-
-// Declaramos props que llegan del padre.
-// - 'open': controla si el diálogo está abierto (Boolean).
-// - 'options': catálogos para selects (regiones, departamentos, nodosConcentrador).
+/* -------- props / emits -------- */
 const props = defineProps({
-  open: {                                    // <- valor que controla abrir/cerrar
-    type: Boolean,
-    default: false,
-  },
-  options: {                                  // <- catálogos (si no llegan, usa arrays vacíos)
+  open: { type: Boolean, default: false },
+  options: {
     type: Object,
     default: () => ({
       regiones: [],
       departamentos: [],
       nodosConcentrador: [],
+      tipos_trabajos: [], // [{ id_tipo, nombre, unidad? }]
     }),
   },
 })
-
-// Declaramos eventos que el hijo puede emitir al padre.
-// - 'update:open': para que el padre reciba cambios del v-model:open.
-// - 'submit': cuando el formulario es válido y el usuario confirma.
-// - 'cancel': si el usuario cancela sin enviar.
 const emit = defineEmits(['update:open', 'submit', 'cancel'])
 
-/* =====================  PUENTE v-model (props <-> emit)  ===================== */
-
-// openLocal es un computed con get/set que "puentea" la prop 'open' con el
-// evento 'update:open'. Permite usar v-model en el VDialog sin defineModel.
+/* -------- v-model puente -------- */
 const openLocal = computed({
-  get: () => props.open,                      // lee el valor actual desde la prop
-  set: v  => emit('update:open', v),          // emite al padre cuando cambia (clic fuera, Esc, etc.)
+  get: () => props.open,
+  set: v => emit('update:open', v),
 })
 
-/* =====================  ESTADO DEL FORM  ===================== */
-
-// Pestaña actual (por defecto 'planeamiento')
-const tab = ref('planeamiento')
-
-// Referencia al VForm para poder ejecutar validate(), resetValidation(), etc.
+/* -------- form -------- */
 const formRef = ref(null)
-
-// Modelo reactivo con los campos del formulario
 const form = reactive({
   ip: null,
   eecc: '',
@@ -187,61 +128,131 @@ const form = reactive({
   region: '',
   dpto: '',
   nodo_concentrador: '',
+  tipos_trabajos: [],
+  medidas: [],
+
+  pruebas: { cantidad_cto: null },
+  pasivos: { total_mufa: null },
 })
 
-// Regla básica de requerido (acepta 0 como válido)
+/* -------- helpers simples -------- */
 const req = v => (!!v || v === 0) || 'Requerido'
 
-// Computado para deshabilitar el botón si a simple vista falta algo.
-// (No reemplaza la validación formal de VForm, solo ayuda a UX del botón)
-const isComplete = computed(() => {
-  const keys = ['eecc', 'prioridad', 'nodo', 'region', 'dpto', 'nodo_concentrador']
-  return keys.every(k => form[k] !== '' && form[k] !== null && form[k] !== undefined)
+const FIELDS_PROYECTO = [
+  'ip','eecc','prioridad','nodo','uips','region','dpto','nodo_concentrador'
+]
+
+const SPECIAL_IDS = computed(() => {
+  const byName = name =>
+    props.options.tipos_trabajos.find(t => (t?.nombre || '').toLowerCase() === name.toLowerCase())?.id_tipo ?? null
+  return {
+    PRUEBAS: byName('PRUEBAS'),
+    PASIVOS: byName('INSTALACION PASIVOS'),
+  }
 })
 
-/* =====================  CICLO: RESET AL ABRIR  ===================== */
+const medidasGenericas = computed(() => {
+  const { PRUEBAS, PASIVOS } = SPECIAL_IDS.value
+  return form.medidas.filter(m => m.id_tipo !== PRUEBAS && m.id_tipo !== PASIVOS)
+})
 
-// Observa cuando el diálogo se abre (props.open = true):
-// - Resetea valores del form
-// - Vuelve a la pestaña inicial
-// - Limpia mensajes de validación (resetValidation)
+/* -------- sync medidas con selección (versión simple) -------- */
 watch(
-  () => props.open,                           // observamos la prop 'open'
-  v => {
-    if (v) {                                  // si se abrió el diálogo
-      Object.assign(form, {                   // reseteamos el formulario
-        ip: null,
-        eecc: '',
-        prioridad: '',
-        nodo: '',
-        uips: null,
-        region: '',
-        dpto: '',
-        nodo_concentrador: '',
-      })
-      tab.value = 'planeamiento'              // volvemos a la pestaña inicial
-      // Limpiamos validaciones en el siguiente frame para asegurar que el DOM está listo
-      requestAnimationFrame(() => formRef.value?.resetValidation())
-    }
-  }
+  () => form.tipos_trabajos,
+  (ids) => {
+    const next = ids.map(id => {
+      const def = props.options.tipos_trabajos.find(t => t.id_tipo === id) || {}
+      const prev = form.medidas.find(m => m.id_tipo === id)
+      return prev ? prev : { ...def, valor: null }
+    })
+    form.medidas = next.sort((a,b) => a.id_tipo - b.id_tipo)
+
+    // si se deselecciona especiales, limpiar sus inputs
+    if (!ids.includes(SPECIAL_IDS.value.PRUEBAS)) form.pruebas.cantidad_cto = null
+    if (!ids.includes(SPECIAL_IDS.value.PASIVOS)) form.pasivos.total_mufa = null
+  },
+  { immediate: true }
 )
 
-/* =====================  HANDLERS: SUBMIT / CANCEL  ===================== */
+/* -------- reset al abrir -------- */
+watch(() => props.open, v => {
+  if (v) {
+    Object.assign(form, {
+      ip: null, eecc: '', prioridad: '', nodo: '', uips: null,
+      region: '', dpto: '', nodo_concentrador: '',
+      tipos_trabajos: [], medidas: [],
+      pruebas: { cantidad_cto: null },
+      pasivos: { total_mufa: null },
+    })
+    requestAnimationFrame(() => formRef.value?.resetValidation())
+  }
+})
 
-// onSubmit: valida el formulario; si es válido, emite 'submit' con los datos
-// y cierra el diálogo emitiendo 'update:open' en false.
-async function onSubmit() {
-  // Ejecuta la validación del VForm (muestra mensajes de error en los campos)
-  const { valid } = await formRef.value.validate()
-  if (!valid) return                          // si no es válido, no enviamos ni cerramos
+/* -------- validación mínima -------- */
+const isComplete = computed(() => {
+  // Separa los campos opcionales de los requeridos para mayor claridad.
+  const requiredProjectFields = FIELDS_PROYECTO.filter(k => !['ip', 'uips'].includes(k))
 
-  emit('submit', { ...form })                 // mandamos los datos al padre
-  emit('update:open', false)                  // cerramos el diálogo avisando al padre
+  // Valida que todos los campos requeridos tengan un valor.
+  const okProyectoRequerido = requiredProjectFields.every(k => {
+    const value = form[k]
+    return value !== '' && value !== null && value !== undefined
+  })
+
+  const needPruebas = form.tipos_trabajos.includes(SPECIAL_IDS.value.PRUEBAS)
+  const needPasivos = form.tipos_trabajos.includes(SPECIAL_IDS.value.PASIVOS)
+
+  const okPruebas = !needPruebas || (form.pruebas.cantidad_cto !== null && form.pruebas.cantidad_cto !== '' && !isNaN(Number(form.pruebas.cantidad_cto)))
+  const okPasivos = !needPasivos || (form.pasivos.total_mufa !== null && form.pasivos.total_mufa !== '' && !isNaN(Number(form.pasivos.total_mufa)))
+
+  return okProyectoRequerido && okPruebas && okPasivos
+})
+
+/* -------- submit / cancel -------- */
+async function onSubmit () {
+    const { valid } = await formRef.value.validate()
+  if (!valid) return
+
+  // 1) Proyecto (igual)
+  const proyecto = {}
+  for (const k of FIELDS_PROYECTO) proyecto[k] = form[k]
+  proyecto.prioridad = Number(proyecto.prioridad ?? 0)
+
+  // 2) RESUMEN (solo genéricos: excluye PRUEBAS y PASIVOS)
+  //    trabajos_resumen: { tipo_id, total_instalar, instalado }
+  const { PRUEBAS, PASIVOS } = SPECIAL_IDS.value
+  const resumen = form.medidas
+    .filter(m => m.id_tipo !== PRUEBAS && m.id_tipo !== PASIVOS)
+    .map(m => ({
+      tipo_id: m.id_tipo,
+      total_instalar: Number(m.valor ?? 0),
+      instalado: 0,
+    }))
+
+  // 3) ESPECIALES (van directo a sus tablas con proyecto_id en el padre)
+  const pruebas = form.tipos_trabajos.includes(PRUEBAS)
+    ? {
+        tipo_id: PRUEBAS,
+        cantidad_cto: Number(form.pruebas.cantidad_cto ?? 0),
+        // si luego agregas más campos aquí, van tal cual
+      }
+    : null
+
+  const pasivos = form.tipos_trabajos.includes(PASIVOS)
+    ? {
+        tipo_id: PASIVOS,
+        total_mufa: Number(form.pasivos.total_mufa ?? 0),
+        // mufa_inst, mufa_empalmados, rotulado, etc. cuando los tengas
+      }
+    : null
+
+  // 4) Emitir al padre con la NUEVA forma
+  emit('submit', { proyecto, resumen, pruebas, pasivos })
+  emit('update:open', false)
 }
 
-// onCancel: avisa al padre que se canceló y cierra el diálogo.
-function onCancel() {
-  emit('cancel')                              // notifica cancelación
-  emit('update:open', false)                  // cierra el diálogo avisando al padre
+function onCancel () {
+  emit('cancel')
+  emit('update:open', false)
 }
 </script>

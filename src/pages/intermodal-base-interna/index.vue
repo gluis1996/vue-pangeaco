@@ -63,6 +63,8 @@ import DialogEstados from '@/pages/intermodal-base-interna/components/dialogEsta
 import DialogDistancia from '@/pages/intermodal-base-interna/components/dialogDistancia.vue'
 import Tabla from '@/pages/intermodal-base-interna/components/tabla.vue'
 import { $api } from '@/utils/api'
+import datos from '@/pages/intermodal-base-interna/composables/data'
+import { objectKeys, p } from '@antfu/utils'
 
 const listaprogramacion = ref([])
 const open = ref(false)                 // diálogo de registro
@@ -79,25 +81,56 @@ onMounted(cargarProyecto)
 const options = reactive({
   regiones: ['LIMA', 'PROVINCIA'],
   departamentos: ['LIMA', 'AREQUIPA', 'ANCASH', 'JUNIN', 'CUSCO', 'LAMBAYEQUE', 'LA LIBERTAD', 'ICA', 'PIURA'],
-  nodosConcentrador: [
-    'HIGUERETA','LA VICTORIA','LOS OLIVOS','SAN JOSE','AREQUIPA 15 DE ENERO',
-    'CHIMBOTE CENTRO','HUANCAYO CENTRO','CUSCO LARAPA','CHICLAYO LEONARDO ORTIZ',
-    'TRUJILLO CENTRO','ICA CENTRO','PIURA CENTRO'
-  ],
+  nodosConcentrador: ['HIGUERETA','LA VICTORIA','LOS OLIVOS','SAN JOSE','AREQUIPA 15 DE ENERO','CHIMBOTE CENTRO','HUANCAYO CENTRO','CUSCO LARAPA','CHICLAYO LEONARDO ORTIZ','TRUJILLO CENTRO','ICA CENTRO','PIURA CENTRO'],
   estados: ['EN PROCESO', 'CULMINADO', 'STAND BY'],
+  tipos_trabajos: datos.value.rows,
 })
 
-const guardarRegistro = async (payload) => {
-  console.log('Registro nuevo:', payload)
+const guardarRegistro = async ({ proyecto, resumen, pruebas, pasivos }) => {
+  console.log('Registro nuevo:', proyecto);
+  console.log('Medidas:', resumen.length);
+  console.log('pruebas', pruebas);
+  console.log('pasivos', pasivos);
+  
   try {
     const response = await $api('internodal/registrar-proyecto',{
       method : 'POST',
-      body : payload,
+      body : proyecto,
       onResponseError({response}){
         console.error(response)
       }
     })
-    console.log(response);
+    
+    if (resumen.length === 0 || resumen === null) {
+        console.log('No se registra en la base medidas');
+    } else {
+      const r1 = await $api('internodal/registrar-tabla-resumen',{
+        method : 'POST',
+        body : resumen.map(r => ({...r,  proyecto_id : response.insertId})),
+        onResponseError({response}){
+          console.error(response)
+        }
+      })
+      
+      if(r1.success){
+        if (pasivos === null) {
+          console.log('No se registra en la base pasivos');
+        }else{
+          const r2 = await $api('internodal/registrar-tabla-pasivos',{
+            method : 'POST',
+            body : {proyecto_id : response.insertId, ...pasivos, },
+            onResponseError({response}){
+              console.error(response)
+            }
+          })
+          console.log(r2);
+        }
+      }else{
+        console.log('errores r1', r1);        
+      }
+    } 
+    
+    
     cargarProyecto();    
   } catch (error) {
     console.error(error)
@@ -283,11 +316,11 @@ function onEstadosDialogSubmit(payload) {
   if (payload.isEdit) {
     console.log('Estamos en editar',payload);
     
-    editarEstados(payload)
+    // editarEstados(payload)
   } else {
     console.log('estamos en registrar',payload);
     
-    registrarEstados(payload)
+    // registrarEstados(payload)
   }
 }
 
