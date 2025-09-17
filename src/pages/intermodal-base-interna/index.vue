@@ -9,10 +9,10 @@
 
   <Tabla
     :listaproyecto="listaprogramacion"
-    @verDetalleDespliegues="abrirDialogDespliegue"
+    @verDetalleDiseno="abrirDialogDiseno"
     @verEstadoAvance="abrirDialogEstados"
     @verDetalleDistancia="abrirDialogDitancias"
-    @verDetalle="verDetalle"
+    @verTrabajos="abrirTrabajos"
   />
 
   <!-- Dialog de registro existente -->
@@ -24,13 +24,13 @@
   />
 
   <!-- Dialog de Despliegue (nuevo) -->
-  <DialogDespliegue
-    v-model:open="openDespliegue"
+  <DialogDiseño
+    v-model:open="openDiseno"
     :id-proyecto="idSeleccionado"
-    :initial="detalleDespliegue"
-    :is-edit="!!detalleDespliegue.despliegeRouter"
+    :initial="detalleDiseno"
+    :is-edit="!!detalleDiseno.despliegeRouter"
     @submit="onDialogSubmit"
-    @cancel="openDespliegue = false"
+    @cancel="openDiseno = false"
   />
 
   <!-- Dialog Estado Avance -->
@@ -44,13 +44,21 @@
   />
 
   <DialogDistancia 
-  v-model:open="openDistancia"
-  :id-proyecto="idSeleccionado"
-  :initial="detalleDistancia"
-  :is-edit="!!detalleDistancia.aereo"
-  @submit="onDistanciaDialogSubmit"
-  @cancel="openDistancia=false"
-  
+    v-model:open="openDistancia"
+    :id-proyecto="idSeleccionado"
+    :initial="detalleDistancia"
+    :is-edit="!!detalleDistancia.aereo"
+    @submit="onDistanciaDialogSubmit"
+    @cancel="openDistancia=false"
+  />
+
+  <!-- Dialog Estado Avance -->
+  <DialogTrabajos 
+    v-model:open="openTrabajos"
+    :id-proyecto="idSeleccionado"
+    :options="options"
+    @submit="onTrabajoDialogSubmit"
+    @cancel="openTrabajos=false"
   />
 </template>
 
@@ -58,21 +66,24 @@
 import { ref, reactive, onMounted } from 'vue'
 import { VBtn } from 'vuetify/components'
 import RegistroDialog from '@/pages/intermodal-base-interna/components/dialog.vue'
-import DialogDespliegue from '@/pages/intermodal-base-interna/components/dialogDespliege.vue'
+import DialogDiseño from '@/pages/intermodal-base-interna/components/DialogDiseño.vue'
 import DialogEstados from '@/pages/intermodal-base-interna/components/dialogEstadoAvance.vue'
 import DialogDistancia from '@/pages/intermodal-base-interna/components/dialogDistancia.vue'
+import DialogTrabajos from '@/pages/intermodal-base-interna/components/DialogTrabajos.vue'
 import Tabla from '@/pages/intermodal-base-interna/components/tabla.vue'
 import { $api } from '@/utils/api'
 import datos from '@/pages/intermodal-base-interna/composables/data'
 import { objectKeys, p } from '@antfu/utils'
+import { syncRef } from '@vueuse/core'
 
 const listaprogramacion = ref([])
 const open = ref(false)                 // diálogo de registro
-const openDespliegue = ref(false)       // diálogo de despliegue
+const openDiseno = ref(false)       // diálogo de despliegue
 const openEstados = ref(false)
 const openDistancia = ref(false)
+const openTrabajos = ref(false)
 const idSeleccionado = ref(null)        // id proyecto para el diálogo
-const detalleDespliegue = ref({})       // datos iniciales para prefill
+const detalleDiseno = ref({})       // datos iniciales para prefill
 const detalleEstadoAvance = ref({})
 const detalleDistancia = ref({})
 
@@ -86,51 +97,16 @@ const options = reactive({
   tipos_trabajos: datos.value.rows,
 })
 
-const guardarRegistro = async ({ proyecto, resumen, pruebas, pasivos }) => {
-  console.log('Registro nuevo:', proyecto);
-  console.log('Medidas:', resumen.length);
-  console.log('pruebas', pruebas);
-  console.log('pasivos', pasivos);
-  
+const guardarRegistro = async (payload) => {
   try {
     const response = await $api('internodal/registrar-proyecto',{
       method : 'POST',
-      body : proyecto,
+      body : payload,
       onResponseError({response}){
         console.error(response)
       }
     })
-    
-    if (resumen.length === 0 || resumen === null) {
-        console.log('No se registra en la base medidas');
-    } else {
-      const r1 = await $api('internodal/registrar-tabla-resumen',{
-        method : 'POST',
-        body : resumen.map(r => ({...r,  proyecto_id : response.insertId})),
-        onResponseError({response}){
-          console.error(response)
-        }
-      })
-      
-      if(r1.success){
-        if (pasivos === null) {
-          console.log('No se registra en la base pasivos');
-        }else{
-          const r2 = await $api('internodal/registrar-tabla-pasivos',{
-            method : 'POST',
-            body : {proyecto_id : response.insertId, ...pasivos, },
-            onResponseError({response}){
-              console.error(response)
-            }
-          })
-          console.log(r2);
-        }
-      }else{
-        console.log('errores r1', r1);        
-      }
-    } 
-    
-    
+    console.log(response);
     cargarProyecto();    
   } catch (error) {
     console.error(error)
@@ -148,42 +124,41 @@ async function cargarProyecto () {
 }
 
 /* ====== Tabla: handlers ====== */
-async function abrirDialogDespliegue (id) {
+async function abrirDialogDiseno (id) {
   try {
-    idSeleccionado.value = id
-    console.log('id slkecionadcod es para el dsplieys', id);
-    
+    idSeleccionado.value = id    
     // 1) Carga detalle desde la API para prellenar el diálogo
-    const resp = await $api(`internodal/buscar-despliege/${id}`, { 
+    const resp = await $api(`internodal/buscar-diseno/${id}`, { 
       method: 'GET',
       onResponseError({response}){
         console.error(response);
       } 
     })
-    // console.log(resp.rows[0].despliegue_enlace_internodal);
-    console.log('total ',resp.rows.length)
-    // detalleDespliegue.value= resp.rows;
+    console.log(resp.rows.length);
+    
     // Mapea lo que necesites al form del diálogo:
     if (resp.rows.length > 0) {
-        detalleDespliegue.value = {
-          despliegeRouter: resp.rows[0].despliegue_routers || '',
-          despliegue_enlace_internodal: resp.rows[0].despliegue_enlace_internodal || '',
-          enlace: resp.rows[0].enlace || '',
-          routers: resp.rows[0].routers || '',
-          proveedor: resp.rows[0].proveedor || '',
+        detalleDiseno.value = {
+          estado_diseño: resp.rows[0].estado_diseño || '',
+          distancia: resp.rows[0].distancia || '',
+          aereo: resp.rows[0].aereo || '',
+          sub_c_red: resp.rows[0].sub_c_red || '',
+          sub_s_red: resp.rows[0].sub_s_red || '',
+          tramo: resp.rows[0].tramo || '',
         }
     } else {
       // Si no hay datos, inicializa vacío
-        detalleDespliegue.value = {
-          despliegeRouter: '',
-          despliegue_enlace_internodal: '',
-          enlace: '',
-          routers: '',
-          proveedor: '',
+        detalleDiseno.value = {
+          estado_diseño: '',
+          distancia: '',
+          aereo: '',
+          sub_c_red: '',
+          sub_s_red: '',
+          tramo: '',
         }
     }
     // 2) Abre el diálogo
-    openDespliegue.value = true
+    openDiseno.value = true
   } catch (e) {
     console.error('Error cargando detalle', e)
   }
@@ -192,76 +167,38 @@ async function abrirDialogDespliegue (id) {
 function verDetalle (id) {
   console.log('Ver', id)
 }
-
-/* ====== Guardar del diálogo de Despliegue ====== */
+/* ========================================== */
+/* ====== Guardar del diálogo de Diseño ====== */
+/* ========================================== */
 function onDialogSubmit(payload) {
   console.log(payload);
-  
-  if (payload.isEdit) {
-    console.log('Estamos en editar',payload.despliegeRouter);
-    
-    editarDespliegue(payload)
-  } else {
-    console.log('estamos en registrar',payload.despliegeRouter);
-    
-    registrarDespliegue(payload)
-  }
+  editarDiseño(payload);
 }
 
-async function registrarDespliegue(payload) {
-  // lógica para registrar
-  console.log('Registrar:', payload)
-  let payloa = {
-    proyecto_id: payload.id_proyecto,
-    despliegue_routers: payload.despliegeRouter,
-    despliegue_enlace_internodal: payload.despliegue_enlace_internodal,
-    enlace: payload.enlace,
-    routers: payload.routers,
-    proveedor: payload.proveedor
-  }
-  try {
-    const response = await $api('internodal/registrar-despliege', {
-      method: 'POST',
-      body: payloa,
-      onResponseError({response}){
-        console.error('Response datos', response)
-      }
-    })
-    console.log(response);
-    
-    if (response.success) {
-      cargarProyecto
-      console.log('OK');
-      
-    }else{
-      alert(response.error)
-    }
-  } catch (error) {
-    console.error('Error cargando detalle', error);
-  }
-}
-
-async function editarDespliegue(payload) {
+async function editarDiseño(payload) {
   // lógica para editar
   console.log('Editar:', payload)
   let payloa = {
-      despliegue_routers: payload.despliegeRouter,
-      despliegue_enlace_internodal: payload.despliegue_enlace_internodal,
-      enlace: payload.enlace,
-      routers: payload.routers,
-      proveedor: payload.proveedor
+      estado_diseño: payload.estado_diseño || null,
+      distancia: payload.distancia || null,
+      aereo: payload.aereo || null ,
+      sub_c_red: payload.sub_c_red || null,
+      sub_s_red: payload.sub_s_red || null,
+      tramo: payload.tramo || null,
   }
   console.log("edit ", payloa);
   console.log("edit ", payload.id_proyecto);
   
   try {
-    const response = await $api(`internodal/actualizar-despliege/${payload.id_proyecto}`,{
+    const response = await $api(`internodal/actualizar-diseno/${payload.id_proyecto}`,{
       method: 'PUT',
       body: payloa,
       onResponseError({response}){
         console.error(response)
       }
     })
+    console.log(response);
+    
     if (response.success) {
       cargarProyecto
     }
@@ -287,7 +224,7 @@ async function abrirDialogEstados (id) {
     })
     // console.log(resp.rows[0].despliegue_enlace_internodal);
     console.log('total ',resp.rows.length)
-    // detalleDespliegue.value= resp.rows;
+    // detalleDiseno.value= resp.rows;
     // Mapea lo que necesites al form del diálogo:
     if (resp.rows.length > 0) {
         detalleEstadoAvance.value = {
@@ -405,7 +342,7 @@ async function abrirDialogDitancias (id) {
     })
     // console.log(resp.rows[0].despliegue_enlace_internodal);
     console.log('total ',resp.rows.length)
-    // detalleDespliegue.value= resp.rows;
+    // detalleDiseno.value= resp.rows;
     // Mapea lo que necesites al form del diálogo:
     if (resp.rows.length > 0) {
         detalleDistancia.value = {
@@ -509,6 +446,39 @@ async function editarDistancia(payload) {
   } catch (error) {
     console.error('Error cargando detalle', error);
   }
+}
+
+/* ========================================== */
+/* ====== Gestines para Tranajos ============ */
+/* ========================================== */
+
+async function abrirTrabajos (id) {
+  idSeleccionado.value = id
+  console.log('selecion estado ', id);
+
+  openTrabajos.value = true
+}
+
+function onTrabajoDialogSubmit(payload) {
+  console.log('Datos recibidos del diálogo de trabajos:', payload);
+
+  // Preparamos los datos para la API. Solo necesitamos el array 'medidas'.
+  const trabajosParaGuardar = payload.medidas.map(medida => ({
+    id_proyecto: payload.id_proyecto,
+    tipo_id: medida.id_tipo,
+    total: Number(medida.total) || null,
+    trabajado: Number(medida.trabajado) || null,
+  }));
+
+  console.log('Datos listos para enviar a la API:', trabajosParaGuardar);
+
+  // Aquí iría tu llamada a la API
+  // try {
+  //   await $api('internodal/registrar-trabajos', { method: 'POST', body: trabajosParaGuardar });
+  //   cargarProyecto();
+  // } catch (error) {
+  //   console.error('Error al guardar trabajos:', error);
+  // }
 }
 
 </script>

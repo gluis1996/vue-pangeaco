@@ -8,20 +8,20 @@
   >
     <!-- Columna de acción (slot por key) -->
     <template #item.id_proyecto="{ value }">
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDespliegues', value)">Despliegue</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verEstadoAvance', value)">Estados</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDistancia', value)">Distancia</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalle', value)">Asignar</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDiseno', value)">Diseño</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verEstadoAvance', value)">Integracion</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDistancia', value)">Capex</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalle', value)">Pex</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verTrabajos', value)">trabajo</VBtn>
     </template>
   </VDataTable>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import dayjs from 'dayjs'
 
 const props = defineProps(['listaproyecto'])
-const emit = defineEmits(['verDetalleDespliegues','verEstadoAvance','verDetalleDistancia','verDetalle'])
+const emit = defineEmits(['verDetalleDiseno','verEstadoAvance','verDetalleDistancia','verDetalle', 'verTrabajos'])
 
 const headers = [
   { title: "ip",                key: "ip" },
@@ -29,7 +29,7 @@ const headers = [
   { title: "nodo",              key: "nodo" },
   { title: "uips",              key: "uips" },
   { title: "region",            key: "region" },
-  { title: "dpto",              key: "dpto" },
+  { title: "dpto",              key: "departamento" },
   { title: "nodo concentrador", key: "nodo_concentrador" },
   { title: "eecc",              key: "eecc" },
   { title: "acciones",          key: "id_proyecto" },
@@ -41,9 +41,9 @@ const items = computed(()=> (props.listaproyecto ?? []).map(r => ({
   nodo: r.nodo,
   uips: r.uips,
   region: r.region,
-  dpto: r.dpto,
+  dpto: r.departamento,
   nodo_concentrador: r.nodo_concentrador,
   eecc: r.eecc,
-  id_proyecto: r.id_proyecto, // <- value del slot
+  id_proyecto: r.id, // <- value del slot
 })))
 </script>

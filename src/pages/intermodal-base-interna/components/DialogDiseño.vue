@@ -1,35 +1,9 @@
 <template>
-  <VDialog :model-value="open" max-width="600" @update:model-value="v => emit('update:open', v)">
+  <VDialog :model-value="open" max-width="1200" @update:model-value="v => emit('update:open', v)">
     <VCard>
       <VCardTitle class="text-h6">Registrar/Editar Despliegue</VCardTitle>
 
-      <VCardText>
-        <VRow dense>
-          <VCol cols="12" md="6">
-            <VTextField label="ID Proyecto" :model-value="idProyecto" readonly density="compact" />
-          </VCol>
-
-          <VCol cols="12" md="6">
-            <VTextField v-model="form.despliegeRouter"  label="Despliege Router" density="compact" />
-          </VCol>
-
-          <VCol cols="12" md="6">
-            <VTextField v-model="form.despliegue_enlace_internodal" label="Despliege E. I." density="compact" />
-          </VCol>
-
-          <VCol cols="12" md="6">
-            <VTextField v-model="form.enlace" label="Enlace" density="compact" />
-          </VCol>
-
-          <VCol cols="12" md="6">
-            <VTextField v-model="form.routers" label="Routers" density="compact" />
-          </VCol>
-
-          <VCol cols="12" md="6">
-            <VTextField v-model="form.proveedor" label="Proveedor" density="compact" />
-          </VCol>
-        </VRow>
-      </VCardText>
+      <FormDiseno v-model="form" />
 
       <VCardActions class="justify-end">
         <VBtn variant="text" @click="onCancel">Cancelar</VBtn>
@@ -41,6 +15,8 @@
 
 <script setup>
 import { reactive, watch } from 'vue'
+import FormDiseno from '@/pages/intermodal-base-interna/components/FormDiseno.vue'
+
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -51,11 +27,12 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'submit', 'cancel'])
 
 const defaultForm = () => ({
-  despliegeRouter: '',
-  despliegue_enlace_internodal: '',
-  enlace: '',
-  routers: '',
-  proveedor: '',
+  estado_diseño: '',
+  distancia: '',
+  aereo: '',
+  sub_c_red: '',
+  sub_s_red: '',
+  tramo: '', // Aunque es calculado, es bueno tenerlo para el reseteo
 })
 const form = reactive(defaultForm())
 
