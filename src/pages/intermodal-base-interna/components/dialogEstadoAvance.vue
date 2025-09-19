@@ -1,7 +1,7 @@
 <template>
   <VDialog :model-value="open" max-width="600" @update:model-value="v => emit('update:open', v)">
     <VCard>
-      <VCardTitle class="text-h6">Registrar/Editar Estados Avance</VCardTitle>
+      <VCardTitle class="text-h6">Registrar/Editar Estados Avance Pex</VCardTitle>
 
       <VCardText>
         <VRow dense>
@@ -10,7 +10,7 @@
           </VCol>
 
           <VCol cols="12" md="6">
-            <VTextField v-model="form.diseno"  label="Diseño" density="compact" />
+            <VSelect v-model="form.diseno" :items="['EN PROCESO','CULMINADO','STAND BY' ]" label="Diseño" density="compact" />
           </VCol>
 
           <VCol cols="12" md="6">
@@ -74,6 +74,7 @@
 
 <script setup>
 import { reactive, watch } from 'vue'
+import { VSelect } from 'vuetify/components'
 
 // 👇 Define tus estados disponibles aquí
 const ESTADOS = [
