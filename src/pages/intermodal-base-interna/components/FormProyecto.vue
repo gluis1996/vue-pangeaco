@@ -12,7 +12,7 @@
             </VCol>
 
             <VCol cols="12" md="2">
-                <VTextField v-model="formLocal.prioridad" type="number" label="Prioridad" :rules="[req]" density="compact" />
+                <VSelect v-model="formLocal.prioridad" :items="[1,2]" label="Prioridad" :rules="[req]" density="compact" />
             </VCol>
 
             <VCol cols="12" md="2">
@@ -48,10 +48,9 @@
                 density="compact" />
             </VCol>
 
-            <VCol cols="12" md="2">
-                <VSelect v-model="formLocal.comercial" :items="['STAND BY', 'OK']" label="Comercial" density="compact" />
+            <VCol cols="12" md="4">
+                <DynamicStateInput v-model="formLocal.comercial" label="Comercial" :items="['STAND BY', 'OK']" />
             </VCol>
-
             <VDivider />
         </VRow>
     </v-card-text>
@@ -59,6 +58,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import DynamicStateInput from './DynamicStateInput.vue';
 
 const props = defineProps({
   modelValue: {

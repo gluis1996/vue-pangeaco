@@ -4,7 +4,7 @@
     <h5>Diseño</h5>
     <VRow class="mt-2">
       <VCol cols="12" md="2">
-        <v-select v-model="formLocal.estado_diseño" :items="['opcion a', 'opcion b', 'opcion c']" label="Estado Diseño" density="compact"></v-select>
+        <v-select v-model="formLocal.estado_diseño" :items="['EN PROCESO', 'CULMINADO', 'STAND BY']" label="Estado Diseño" density="compact"></v-select>
       </VCol>
       <VCol cols="12" md="2">
         <VTextField v-model="formLocal.distancia" type="number" label="Distancia" density="compact" :min="0" :rules="[req, v => v >= 0 || 'No se admiten negativos']" suffix="metros" ></VTextField>

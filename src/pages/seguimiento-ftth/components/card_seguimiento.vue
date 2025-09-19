@@ -10,10 +10,12 @@
         </div>
       </div>
       <h5 class="text-primary">
-        {{ props.lista_seguimiento.uips }}
+        Asignado: {{ props.lista_seguimiento.fecha_asignacion }} <br>
+        Ult. Cambio: {{ props.lista_seguimiento.ultima_actualizacion }} <br>
+        Tiem. Transcurrido: {{ props.lista_seguimiento.tiempo_transcurrido }}
       </h5>
       <div class="text-body-1 mb-3">
-        {{props.lista_seguimiento.status_pext_pct}}% avanzado
+        {{ (Number(props.lista_seguimiento.avance_total) * 100).toFixed(2) }}% avanzado
       </div>
       <VBtn size="small" @click="enviar">
         Ver detalle
@@ -34,7 +36,7 @@ const emit = defineEmits(['cargar_detalle']);
 
 
 const enviar = () => {
-    emit('cargar_detalle', props.lista_seguimiento.id_proyecto);
+    emit('cargar_detalle', props.lista_seguimiento.id);
 }
 
 </script>

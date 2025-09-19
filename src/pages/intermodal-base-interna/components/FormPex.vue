@@ -1,6 +1,5 @@
 <template>
   <v-card-text>
-    <h5>Pex</h5>
     <VRow>
       <!-- Cada campo ahora es un componente dinámico -->
       <VCol cols="12" md="6">

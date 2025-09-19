@@ -1,4 +1,5 @@
 <!-- src/pages/intermodal-base-interna/components/DynamicStateInput.vue -->
+ <!-- Selector de modo con VSwitch donde cambiara el tipo de input por fecha o estado -->
 <template>
   <VRow dense>
     <!-- Selector de modo con VSwitch -->
@@ -21,6 +22,7 @@
         :model-value="props.modelValue"
         :label="label"
         density="compact"
+        :attach="true"
         @update:model-value="v => emit('update:modelValue', v)"
       />
 

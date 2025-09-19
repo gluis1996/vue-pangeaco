@@ -8,20 +8,17 @@
   >
     <!-- Columna de acción (slot por key) -->
     <template #item.id_proyecto="{ value }">
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDiseno', value)">Diseño</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verEstadoAvance', value)">Integracion</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalleDistancia', value)">Capex</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verDetalle', value)">Pex</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verTrabajos', value)">trabajo</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('verTrabajos', value)">Trabajos</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('asignar-proyecto', value)">Asignar</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" @click="$emit('editarProyecto', value)">Editar</VBtn>
     </template>
   </VDataTable>
 </template>
 
 <script setup>
-import { computed } from 'vue'
 
 const props = defineProps(['listaproyecto'])
-const emit = defineEmits(['verDetalleDiseno','verEstadoAvance','verDetalleDistancia','verDetalle', 'verTrabajos'])
+const emit = defineEmits(['verTrabajos','editarProyecto','asignar-proyecto'])
 
 const headers = [
   { title: "ip",                key: "ip" },

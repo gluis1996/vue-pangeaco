@@ -1,13 +1,12 @@
 <!-- src/pages/intermodal-base-interna/components/FormDiseno.vue -->
 <template>
   <VCardText>
-          <h5>Integracion</h5>
           <VRow>
             <VCol cols="12" md="2">
-                <v-select :items="['ok', 'no']" v-model="formLocal.despliege_e_i" label="Despliege E.I." density="compact"></v-select>
+                <v-select :items="['FASE 1', 'FASE 2', 'REDISEÑADO', 'NO']" v-model="formLocal.despliege_e_i" label="Despliege E.I." density="compact"></v-select>
             </VCol>
             <VCol cols="12" md="2">
-                <VTextField v-model="formLocal.router" type="number" :rules="[req, v => v >= 0 || 'No se admiten negativos']" label="Router" density="compact" suffix="cant"></VTextField>
+                <v-select v-model="formLocal.router" :items="[1,2]" label="Router" density="compact"></v-select>
             </VCol>
             <VCol cols="12" md="2">
                 <v-select :items="['ZTE', 'POR ADJUDICAR', 'HUAWEI', 'NO REQUIERE', 'NOKIA', 'OLT']" v-model="formLocal.proveedor" label="Proveedor" density="compact"></v-select>
@@ -15,8 +14,8 @@
             <VCol cols="12" md="2">
                 <v-select :items="['EN PROCESO','CULMINADO','STAND BY']" v-model="formLocal.integracion_intermodal" label="Integracion Intenodal" density="compact"></v-select>
             </VCol>
-            <VCol cols="12" md="2">
-                <v-select :items="['PENDIENTE PEXT', 'OK','SIN ACCESO']" v-model="formLocal.jumpeo" label="Junpeo" density="compact"></v-select>
+            <VCol cols="12" md="4">
+                <DynamicStateInput v-model="formLocal.jumpeo" label="Junpeo" :items="['PENDIENTE PEXT', 'OK','SIN ACCESO']" />
             </VCol>
             <VDivider />
           </VRow>
@@ -25,6 +24,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import DynamicStateInput from './DynamicStateInput.vue';
 
 const props = defineProps({
   modelValue: {
