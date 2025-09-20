@@ -38,7 +38,6 @@ const login = async ()=>{
         password: form.value.password,
       },
     })
-    console.log(res);
     
     // ⬇️ Guarda el usuario para toda la app (username, email, role, nombre, etc.)
     // Backend debe devolver: { user: { id, username, nombre, email, role } }
@@ -51,7 +50,6 @@ const login = async ()=>{
       router.replace(dest)
     })
   } catch (err) {
-    // console.error(err)
     error_exis.value = 'Credenciales incorrectas'
     alert('Credenciales incorrectas')
   }

@@ -220,7 +220,7 @@ export function useProgramacion () {
 
   const procesarAsignacionZona = async (zi) => {
     const payload = construirPayload([zonas.value[zi]])
-    console.log(payload)
+    
     // await $api('programaciones/planificar', { method: 'POST', body: payload })
   }
 
@@ -229,7 +229,7 @@ export function useProgramacion () {
     const payload = construirPayload(zonas.value)
     loading.value = true                // 👈 PRENDER
     error.value = null
-    console.log(payload)
+    
     try {
       const res = await $api('programaciones/pre-registro-programacion-rutas-programacion', {
         method: 'POST',
@@ -239,7 +239,7 @@ export function useProgramacion () {
           error.value = 'No se pudo planificar'
         }
       })
-      console.log('Respuesta API OK:', res)
+      
       const data = res?.data ?? res
       lastApiResponse.value = data
       return true               // 👈 guardamos TODO el JSON

@@ -180,7 +180,7 @@ async function handleUpdate(sectionName, data, url) {
             }
         })
 
-        console.log(`Respuesta de la API para ${sectionName}:`, response)
+        
         
         // Comprobamos si la actualización fue exitosa según tu criterio
         if (response.success && response.data?.affectedRows > 0) {

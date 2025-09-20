@@ -45,7 +45,7 @@ async function consultar() {
 
   try {
     // Ajusta la URL/param según tu backend
-    console.log(date.value);
+    
     
   } catch (e) {
     error.value = e?.message ?? 'Error consultando la API.'

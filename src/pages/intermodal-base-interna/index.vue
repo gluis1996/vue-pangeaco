@@ -101,7 +101,7 @@ const guardarRegistro = async (payload) => {
         console.error(response)
       }
     })
-    console.log(response);
+    
     cargarProyecto();    
   } catch (error) {
     console.error(error)
@@ -128,7 +128,7 @@ async function abrirDialogEditar(id) {
   try {
     // Asumimos que tienes un endpoint que devuelve todos los datos de un proyecto
     const apiResponse = await $api(`internodal/listar-consolidado-proyecto/${id}`, { method: 'GET' })
-    console.log('Respuesta cruda de la API:', apiResponse);
+    
     
     // Transformamos la respuesta: extraemos el primer objeto de cada array.
     const datosFormateados = {
@@ -155,7 +155,7 @@ async function abrirDialogoAsignar(proyecto) {
     // Consultamos la API para obtener los datos más frescos del proyecto.
     // Asumimos que el endpoint devuelve un objeto con { id, ip, eecc, ... }
     const response = await $api(`internodal/buscar-proyecto/${proyecto}`, { method: 'GET' });
-    console.log(response);    
+        
     proyectoParaAsignar.value = response.result[0]; // Ajusta 'response.data' según la estructura de tu API
     openAsignar.value = true;
   } catch (error) {
@@ -169,14 +169,14 @@ async function abrirDialogoAsignar(proyecto) {
 async function guardarAsignacion({ id, ip }) {
   isPageLoading.value = true;
   try {
-    console.log(id, ip);
+    
     
     // Endpoint para actualizar la IP y marcar como asignado
     const response = await $api(`internodal/asignacion-proyecto-contrata/${id}`, {
       method: 'PUT',
       body: { ip: ip }
     });
-    console.log(response);
+    
     
     await cargarProyecto(); // Recargamos la tabla para ver el cambio
   } catch (error) {
@@ -195,13 +195,13 @@ async function guardarAsignacion({ id, ip }) {
 
 async function abrirTrabajos (id) {
   idSeleccionado.value = id
-  console.log('selecion estado ', id);
+  
 
   openTrabajos.value = true
 }
 
 async function onTrabajoDialogSubmit(payload) {
-  console.log('Datos recibidos del diálogo de trabajos:', payload);
+  
 
   // Preparamos los datos para la API. Solo necesitamos el array 'medidas'.
   const trabajosParaGuardar = payload.medidas.map(medida => ({
@@ -211,7 +211,7 @@ async function onTrabajoDialogSubmit(payload) {
     trabajados: Number(medida.trabajado) || null,
   }));
 
-  console.log('Datos listos para enviar a la API:', trabajosParaGuardar);
+  
 
   // Aquí iría tu llamada a la API
   try {
@@ -219,7 +219,7 @@ async function onTrabajoDialogSubmit(payload) {
       method: 'POST', 
       body: trabajosParaGuardar });
     
-      console.log(response);
+      
       
     cargarProyecto();
   } catch (error) {

@@ -165,10 +165,10 @@ const cancelar = async () => {
           error.value = 'No se pudo planificar'
         }
         })
-    console.log('Respuesta API cancelar:', res)
+    
     // 👇 emitir evento para que el padre resetee todo
     const data = res?.data ?? res
-    console.log('Respuesta API cancelar:', data)
+    
 
     if (data.ok) {
       emit('update:apiResp', null) // 👈 pide al padre que resetee
@@ -189,7 +189,7 @@ const registrar =  async() => {
 
   try{
     const pay = props.apiResp;
-    console.log(pay);
+    
     showOverlay.value = true
     const response = await $api('programaciones/registra-actualiza-divicau', {
       method: 'POST',
@@ -199,7 +199,7 @@ const registrar =  async() => {
         error.value = 'No se pudo registrar la programación'
       }
     }) 
-    console.log('Respuesta API registrar:', response);
+    
     const data = response?.data ?? response
     if (data.ok) {
       emit('update:apiResp', null) // 👈 pide al padre que resetee

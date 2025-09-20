@@ -28,7 +28,7 @@ const cargarprogramaciones = async ()=>{
         )
         listaapi.value = response.rows;        
     } catch (error) {
-        console.log(error);        
+                
     }
 }
 
@@ -40,12 +40,12 @@ const abrirDetalle = async (data)=>{
                 console.error('Respuesta API no OK:', response)
             }
         })
-        console.log(data);
-        console.log(response);       
+        
+               
         
         listaapiRutas.value = response.rows;
     } catch (error) {
-        console.log(error);        
+                
     }
 }
 

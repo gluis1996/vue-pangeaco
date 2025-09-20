@@ -44,7 +44,7 @@ import { VCol, VRow } from 'vuetify/components';
 
 
 const name = computed(() => currentUser.value?.nombre || currentUser.value?.username || 'Usuario')
-console.log(name.value.toUpperCase());
+
 const lista_asignacion = ref([])
 
 // Refs para controlar el diálogo y almacenar los datos
@@ -60,14 +60,14 @@ async function listar_asignaciones() {
         const response = await $api(`internodal/listar-trabajos-asigandos/${name.value.toUpperCase()}`, {
             method: 'GET',
             onResponseError({ response }) {
-                console.log(response);
+                
             }
         })
-        console.log(response);
+        
         lista_asignacion.value = response.result;
-        console.log(lista_asignacion.value);
+        
     } catch (error) {
-        console.log('Error cargando datos:', error)
+        
     } finally {
         isPageLoading.value = false; // Desactivamos el loader, tanto si hubo éxito como si hubo error
     }

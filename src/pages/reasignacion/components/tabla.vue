@@ -42,7 +42,6 @@ const consultoperador = async () => {
     const res = await $api(`reasignacion/buscar-reasginacion-operador/mes-actual/${name.value}`,{
       method: 'GET',
       onResponseError({response}){
-        console.log(response);
         notify('warning', 'El usuario no tiene instalaciones');
       }
     });
@@ -59,9 +58,7 @@ const consultoperador = async () => {
     }));
     notify('success', 'El usuario tiene instalaciones');
   } catch (error) {
-    console.log('Error cargando datos:', error)
   } finally {
-    console.log('se finaliza')
   }
 };
 onMounted(consultoperador);

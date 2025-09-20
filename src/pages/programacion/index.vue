@@ -39,7 +39,7 @@ provide('programacion', programacion)
 const { lastApiResponse, loading, error } = programacion
 
 const handleSubmit = (data) => {
-    console.log('✅ Datos recibidos del modal:', data)
+    
     // aquí podrías hacer un fetch/axios o guardar en tu store
 }
 

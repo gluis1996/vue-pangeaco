@@ -31,8 +31,7 @@ const headers = [
   { title: "sitio",             key: "sitio" },
 ];
 
-const items = computed(()=>{
-    console.log(props.listaapiRutas);    
+const items = computed(()=>{  
     return (props.listaapiRutas ?? []).map(r => ({
         nombre_ruta : r.nombre_ruta,
         fecha_programada: d(r.fecha_programada),

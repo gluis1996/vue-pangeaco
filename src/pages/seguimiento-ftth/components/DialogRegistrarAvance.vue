@@ -174,7 +174,7 @@ const dialogValueUpdate = val => {
 }
 
 const actualizarTrabajo = async (trabajo, index) => {
-  console.log("Actualizando el trabajo:", trabajo);
+  
 
   // Preparamos el payload para enviar al API
   const payload = {
@@ -193,20 +193,20 @@ const actualizarTrabajo = async (trabajo, index) => {
               method: 'PUT',
               body: payload,
               onResponseError({response}){
-                  console.log(response);
+                  
               }
           })
-          console.log('impimeros en endpoint A', response);
+          
           
       }else{
           const response = await $api(`/internodal/actualizar-trabajo-avance/${trabajo.id}`, {
               method: 'PUT',
               body: payload,
               onResponseError({response}){
-                  console.log(response);
+                  
               }
           })
-          console.log('impimeros en endpoint B', response);
+          
       }
 
       // ✅ ¡Solución! Actualizamos el valor original para que coincida con el nuevo.
