@@ -59,12 +59,12 @@ export default [
       {
         title: 'Enlaze Inter. B. I.',
         to: { name: 'intermodal-base-interna' },
-        roles: ['operador','administrador'],
+        roles: ['agente','administrador'],
       },
             {
         title: 'Seguimiento FTTH',
         to: { name: 'seguimiento-ftth' },
-         roles: ['administrador','tecnico'],
+         roles: ['administrador','tecnico','agente'],
       }
     ]
   }

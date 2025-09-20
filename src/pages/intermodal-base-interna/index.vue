@@ -379,4 +379,11 @@ async function ejecutarEliminacion() {
   }
 }
 
+
+definePage({
+    meta: {
+        roles: ['administrador','tecnico','agente'],   // 👈 solo este rol puede entrar
+    },
+})
+
 </script>

@@ -101,5 +101,11 @@ const listar_detalle = async (item) => {
     }
 }
 
+definePage({
+    meta: {
+        roles: ['administrador','tecnico','agente'],   // 👈 solo este rol puede entrar
+    },
+})
+
 
 </script>
