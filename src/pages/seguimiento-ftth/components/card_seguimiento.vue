@@ -1,31 +1,69 @@
 <template>
   <VCard class="position-relative">
     <VCardText>
+      <!-- Cabecera que ocupa todo el ancho -->
       <div class="mb-3">
         <h6 class="text-h6 text-wrap">
             <strong>{{ props.lista_seguimiento.nodo }} - {{ props.lista_seguimiento.region }} - {{ props.lista_seguimiento.dpto }} - {{ props.lista_seguimiento.nodo_concentrador }}</strong>
         </h6>
-        <div class="text-subtitle-1">
-          {{ props.lista_seguimiento.eecc }} <br> {{ props.lista_seguimiento.ip }}
+      </div>
+
+      <!-- Contenedor para las dos columnas inferiores -->
+      <div class="d-flex justify-space-between align-end">
+        <!-- Columna Izquierda -->
+        <div class="flex-grow-1">
+          <div class="text-subtitle-1">
+            {{ props.lista_seguimiento.eecc }} <br> {{ props.lista_seguimiento.ip }}
+          </div>
+          <h5 class="text-primary">
+            Ult. Cambio: {{ ultimaActualizacionFormateada }} <br>
+          </h5>
+          <div class="text-body-1 mb-3">
+            {{ (Number(props.lista_seguimiento.avance_total) * 100).toFixed(2) }}% avanzado
+          </div>
+          <VBtn size="small" @click="enviar" class="mt-2">
+            Ver detalle
+          </VBtn>
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="text-right" style="min-width: 120px;">
+          <div>
+            <p class="text-caption mb-0">Tendido {{ (props.lista_seguimiento.av_tendidos) * 100 }}%</p>
+            <VProgressLinear
+              :model-value="Number(props.lista_seguimiento.av_tendidos) * 100"
+              color="info"
+              height="8"
+              rounded
+            />
+          </div>
+          <div class="mt-2">
+            <p class="text-caption mb-0">Mufas {{ props.lista_seguimiento.pct_pasivos }}%</p>
+            <VProgressLinear
+              :model-value="Number(props.lista_seguimiento.pct_pasivos)"
+              color="warning"
+              height="8"
+              rounded
+            />
+          </div>
+          <div class="mt-2">
+            <p class="text-caption mb-0">Pruebas {{ props.lista_seguimiento.pct_pruebas }}%</p>
+            <VProgressLinear
+              :model-value="Number(props.lista_seguimiento.pct_pruebas)"
+              color="secondary"
+              height="8"
+              rounded
+            />
+          </div>
         </div>
       </div>
-      <h5 class="text-primary">
-        Asignado: {{ props.lista_seguimiento.fecha_asignacion }} <br>
-        Ult. Cambio: {{ props.lista_seguimiento.ultima_actualizacion }} <br>
-        Tiem. Transcurrido: {{ props.lista_seguimiento.tiempo_transcurrido }}
-      </h5>
-      <div class="text-body-1 mb-3">
-        {{ (Number(props.lista_seguimiento.avance_total) * 100).toFixed(2) }}% avanzado
-      </div>
-      <VBtn size="small" @click="enviar">
-        Ver detalle
-      </VBtn>
     </VCardText>
   </VCard>
 </template>
 
 <script setup>
 import { type } from '@/views/components/alert/demoCodeAlert';
+import { computed } from 'vue';
 
 
 const props = defineProps({
@@ -34,6 +72,14 @@ const props = defineProps({
 
 const emit = defineEmits(['cargar_detalle']);
 
+const ultimaActualizacionFormateada = computed(() => {
+  const tiempo = props.lista_seguimiento.ultima_actualizacion || '';
+  const partes = tiempo.split(' ');
+  if (partes.length >= 4) {
+    return `${partes[0]} ${partes[1]} ${partes[2]} ${partes[3]}`;
+  }
+  return tiempo; // Devuelve el original si no tiene el formato esperado
+});
 
 const enviar = () => {
     emit('cargar_detalle', props.lista_seguimiento.id);

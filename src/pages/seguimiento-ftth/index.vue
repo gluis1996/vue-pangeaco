@@ -15,7 +15,7 @@
     <h2>Seguimiento Contrata</h2>
 
     <VRow>
-        <VCol cols="12" md="10" lg="4" v-for="list in lista_asignacion">
+        <VCol cols="12" lg="4" v-for="list in lista_asignacion">
             <card_seguimiento 
             :lista_seguimiento="list" 
             @cargar_detalle="listar_detalle"

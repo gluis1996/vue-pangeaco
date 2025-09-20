@@ -2,13 +2,10 @@
 <template>
   <!-- NOTA: Para este ejemplo, he creado un componente FormDiseno.vue que no está en el contexto. -->
   <!-- Puedes seguir este patrón para los demás VCardText. -->
-  <VDialog v-model="openLocal" max-width="1200">
+  <VDialog v-model="openLocal" max-width="1200" :retain-focus="false">
     <VCard>
       <VCardTitle class="text-h6">Nuevo Registro</VCardTitle>
-
-
-      <VForm ref="formRef">
-        
+      <VForm ref="formRef">        
         <FormProyecto v-model="form.proyecto" :options="options" />
         <FormDiseno v-model="form.diseno" />
         <FormIntegracion v-model="form.integracion" />

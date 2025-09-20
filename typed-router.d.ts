@@ -41,6 +41,7 @@ declare module 'vue-router/auto-routes' {
     'intermodal-base-interna-components-form-proyecto': RouteRecordInfo<'intermodal-base-interna-components-form-proyecto', '/intermodal-base-interna/components/FormProyecto', Record<never, never>, Record<never, never>>,
     'intermodal-base-interna-components-form-trabajos': RouteRecordInfo<'intermodal-base-interna-components-form-trabajos', '/intermodal-base-interna/components/FormTrabajos', Record<never, never>, Record<never, never>>,
     'intermodal-base-interna-components-tabla': RouteRecordInfo<'intermodal-base-interna-components-tabla', '/intermodal-base-interna/components/tabla', Record<never, never>, Record<never, never>>,
+    'intermodal-base-interna-dialog-asignar': RouteRecordInfo<'intermodal-base-interna-dialog-asignar', '/intermodal-base-interna/DialogAsignar', Record<never, never>, Record<never, never>>,
     'login': RouteRecordInfo<'login', '/login', Record<never, never>, Record<never, never>>,
     'not-authorized': RouteRecordInfo<'not-authorized', '/not-authorized', Record<never, never>, Record<never, never>>,
     'preasignacion': RouteRecordInfo<'preasignacion', '/preasignacion', Record<never, never>, Record<never, never>>,

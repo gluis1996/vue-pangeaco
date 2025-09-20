@@ -1,6 +1,5 @@
 <template>
     <v-card-text>
-        <h5>Proyecto</h5>
         <VRow>
             <!-- Proyecto -->
             <VCol cols="12" md="2">

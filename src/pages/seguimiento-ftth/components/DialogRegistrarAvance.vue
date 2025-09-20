@@ -1,14 +1,13 @@
 <template>
   <VDialog
     :model-value="props.isDialogVisible"
-    max-width="900"
+    max-width="900" :retain-focus="false"
     @update:model-value="dialogValueUpdate"
   >
     <VCard title="Registrar Avance">
       <!-- Loader Overlay -->
       <VOverlay
         v-model="isLoading"
-        contained
         class="align-center justify-center"
         persistent
       >
@@ -17,7 +16,7 @@
 
       <VCardText>
         <!-- Iteramos sobre cada trabajo para crear una fila de formulario -->
-        <VForm v-for="(trabajo, index) in formState.trabajos" :key="trabajo.id" v-slot="{ isValid }" class="mb-6">
+        <VForm v-for="(trabajo, index) in formState.trabajos" :key="trabajo.id" :ref="el => formRefs[index] = el" v-slot="{ isValid }" class="mb-6">
             <VRow align="center">
                 <!-- Nombre del Trabajo -->
                 <VCol cols="12">
@@ -62,7 +61,7 @@
                 </div>
                 </VCol>
                 <VCol cols="12" sm="3" class="text-center">
-                    <VBtn color="primary" @click="actualizarTrabajo(trabajo)" :disabled="!isValid.value">
+                    <VBtn color="primary" @click="actualizarTrabajo(trabajo, index)" :disabled="!isValid.value">
                         Actualizar
                     </VBtn>
                 </VCol>
@@ -115,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { $api } from '@/utils/api'
 
 const props = defineProps({
@@ -131,12 +130,14 @@ const formState = ref({
   mufas: null,
 });
 const isLoading = ref(false);
+const formRefs = ref([]); // Array para almacenar las referencias de los formularios
 
 // Observador que se activa cuando llegan nuevos datos
 watch(() => props.detalleData, (newData) => {
   if (!newData) {
     // Si no hay datos, reseteamos el estado del formulario
     formState.value = { trabajos: [], mufas: null };
+    formRefs.value = [];
     return;
   }
 
@@ -172,7 +173,7 @@ const dialogValueUpdate = val => {
   }
 }
 
-const actualizarTrabajo = async (trabajo) => {
+const actualizarTrabajo = async (trabajo, index) => {
   console.log("Actualizando el trabajo:", trabajo);
 
   // Preparamos el payload para enviar al API
@@ -207,6 +208,14 @@ const actualizarTrabajo = async (trabajo) => {
           })
           console.log('impimeros en endpoint B', response);
       }
+
+      // ✅ ¡Solución! Actualizamos el valor original para que coincida con el nuevo.
+      trabajo.trabajados_original = Number(trabajo.trabajados) || 0;
+
+      // ✅ ¡Paso Clave! Forzamos la re-validación del formulario específico.
+      nextTick(() => {
+        formRefs.value[index]?.validate();
+      });
 
   } catch (error) {
       console.error("Error al actualizar el trabajo:", error);
