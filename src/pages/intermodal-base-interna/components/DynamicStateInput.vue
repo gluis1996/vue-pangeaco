@@ -18,11 +18,12 @@
     <VCol cols="12" md="8">
       <!-- Si es fecha -->
       <AppDateTimePicker
+        ref="datePickerRef"
         v-if="isDateMode === 'fecha'"
         :model-value="props.modelValue"
         :label="label"
         density="compact"
-        :attach="true"
+        @close="onDatePickerClose"
         @update:model-value="v => emit('update:modelValue', v)"
       />
 
@@ -52,12 +53,23 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const isDateLike = (val) => typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)
+const datePickerRef = ref(null)
 const isDateMode = ref(isDateLike(props.modelValue) ? 'fecha' : 'estado')
 
 watch(isDateMode, (newMode, oldMode) => {
-  if (oldMode === 'fecha' && newMode === 'estado') {
+  // Si el modo cambia, reseteamos el valor para evitar conflictos de tipo.
+  if (newMode !== oldMode) {
     emit('update:modelValue', null)
   }
 })
+
+function onDatePickerClose() {
+  // Forzamos que el foco vuelva al campo de texto del calendario
+  // cuando el menú se cierra. Esto evita que el foco "salte" a otro input.
+  const inputElement = datePickerRef.value?.$el.querySelector('input')
+  if (inputElement) {
+    inputElement.focus()
+  }
+}
 
 </script>

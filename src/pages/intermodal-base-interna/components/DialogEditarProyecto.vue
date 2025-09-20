@@ -1,5 +1,5 @@
 <template>
-    <VDialog v-model="openLocal" max-width="1200">
+    <VDialog v-model="openLocal" max-width="1200" :retain-focus="false">
         <VCard>
             <VCardTitle class="text-h6">
                 Editar Registro del Proyecto: {{ form.proyecto.ip || idProyecto }}
