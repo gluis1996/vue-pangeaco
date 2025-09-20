@@ -11,6 +11,7 @@
       <VBtn density="compact" class="ma-1" size="small" @click="$emit('verTrabajos', value)">Trabajos</VBtn>
       <VBtn density="compact" class="ma-1" size="small" @click="$emit('asignar-proyecto', value)">Asignar</VBtn>
       <VBtn density="compact" class="ma-1" size="small" @click="$emit('editarProyecto', value)">Editar</VBtn>
+      <VBtn density="compact" class="ma-1" size="small" color="error" @click="$emit('delete-proyecto', value)">Eliminar</VBtn>
     </template>
   </VDataTable>
 </template>
@@ -18,7 +19,7 @@
 <script setup>
 
 const props = defineProps(['listaproyecto'])
-const emit = defineEmits(['verTrabajos','editarProyecto','asignar-proyecto'])
+const emit = defineEmits(['verTrabajos','editarProyecto','asignar-proyecto', 'delete-proyecto'])
 
 const headers = [
   { title: "ip",                key: "ip" },

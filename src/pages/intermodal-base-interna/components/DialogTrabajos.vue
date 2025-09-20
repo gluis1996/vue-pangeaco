@@ -19,8 +19,8 @@ import FormTrabajos from '@/pages/intermodal-base-interna/components/FormTrabajo
 
 const props = defineProps({
   open: { type: Boolean, default: false },
-  idProyecto: { type: [String, Number], default: '' },
-  initial: { type: Object, default: () => ({}) },
+  idProyecto: { type: [String, Number], required: true },
+  initialData: { type: Object, default: () => ({}) },
   isEdit: { type: Boolean, default: false },
   options: { type: Object, default: () => ({}) },
 })
@@ -28,22 +28,41 @@ const emit = defineEmits(['update:open', 'submit', 'cancel'])
 
 const defaultForm = () => ({
   // El v-model del select
-  tipos_trabajos: [],
+  tipos_trabajos: [], // IDs de los trabajos seleccionados
   // El array que contendrá los datos de los inputs
   medidas: [],
 })
 const form = reactive(defaultForm())
 
 watch(
-    () => [props.initial, props.idProyecto, props.open],
-    () => {
-        Object.assign(form, defaultForm(), props.initial || {})
+    () => props.open,
+    (isOpen) => {
+        if (isOpen) {
+            // Cuando se abre el diálogo, lo inicializamos.
+            const initial = props.initialData || {};
+            const trabajosExistentes = initial.trabajos || [];
+
+            // 1. Pre-seleccionar los checkboxes con los trabajos que ya existen.
+            const tiposTrabajosIds = trabajosExistentes.map(t => t.tipo_id);
+
+            // 2. Mapear los trabajos existentes al formato que espera 'FormTrabajos' (medidas).
+            const medidas = trabajosExistentes.map(t => ({
+                id: t.id, // <-- ¡Añadimos el ID del trabajo!
+                id_tipo: t.tipo_id,
+                nombre: t.nombre,
+                unidad: t.unidad,
+                total: t.total || '',
+                trabajado: t.trabajados || '',
+            }));
+
+            Object.assign(form, defaultForm(), { tipos_trabajos: tiposTrabajosIds, medidas: medidas });
+        }
     },
-    { immediate: true, deep: true }
+    { immediate: true }
 )
 
 function onSubmit() {
-    emit('submit', { id_proyecto: props.idProyecto, ...form, isEdit: props.isEdit })
+    emit('submit', { id_proyecto: props.idProyecto, isEdit: props.isEdit, ...form })
     emit('update:open', false)
 }
 
