@@ -43,7 +43,7 @@ import card_seguimiento from '@/pages/seguimiento-ftth/components/card_seguimien
 import { VCol, VRow } from 'vuetify/components';
 
 
-const name = computed(() => currentUser.value?.nombre || currentUser.value?.username || 'Usuario')
+const name = computed(() => currentUser.value?.role || currentUser.value?.role || 'role')
 
 const lista_asignacion = ref([])
 
@@ -57,7 +57,9 @@ onMounted(listar_asignaciones);
 async function listar_asignaciones() {
     isPageLoading.value = true; // Activamos el loader
     try {
-        const response = await $api(`internodal/listar-trabajos-asigandos/${name.value.toUpperCase()}`, {
+        console.log(name.value);
+        
+        const response = await $api(`internodal/listar-trabajos-asigandos/`, {
             method: 'GET',
             onResponseError({ response }) {
                 
