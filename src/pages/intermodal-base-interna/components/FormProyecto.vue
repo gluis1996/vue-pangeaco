@@ -15,7 +15,7 @@
             </VCol>
 
             <VCol cols="12" md="2">
-                <VTextField v-model="formLocal.nodo" label="Nodo" :rules="[req]" density="compact" />
+                <UbicacionSelect v-model="formLocal.nodo" />
             </VCol>
 
             <VCol cols="12" md="2">
@@ -58,6 +58,7 @@
 <script setup>
 import { computed } from 'vue';
 import DynamicStateInput from './DynamicStateInput.vue';
+import UbicacionSelect from './UbicacionSelect.vue';
 
 const props = defineProps({
   modelValue: {

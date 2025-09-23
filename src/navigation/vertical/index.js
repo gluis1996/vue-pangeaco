@@ -61,10 +61,15 @@ export default [
         to: { name: 'intermodal-base-interna' },
         roles: ['agente','administrador'],
       },
-            {
+      {
         title: 'Seguimiento FTTH',
         to: { name: 'seguimiento-ftth' },
          roles: ['administrador','tecnico','agente'],
+      },
+      {
+        title: 'Licencias',
+        to: { name: 'seguimiento-licencia' },
+         roles: ['administrador'],
       }
     ]
   }

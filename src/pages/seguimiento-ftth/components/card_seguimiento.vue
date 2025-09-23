@@ -28,7 +28,16 @@
 
         <!-- Columna Derecha -->
         <div class="text-right" style="min-width: 120px;">
-          <div>
+          <div >
+            <p class="text-caption mb-0">Licencia {{ (props.lista_seguimiento.pct_licencias_entregadas) }}%</p>
+            <VProgressLinear
+              :model-value="Number(props.lista_seguimiento.pct_licencias_entregadas) "
+              color="secundary"
+              height="8"
+              rounded
+            />
+          </div>
+          <div class="mt-2">
             <p class="text-caption mb-0">Tendido {{ (props.lista_seguimiento.av_tendidos) * 100 }}%</p>
             <VProgressLinear
               :model-value="Number(props.lista_seguimiento.av_tendidos) * 100"

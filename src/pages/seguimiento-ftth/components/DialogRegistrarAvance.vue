@@ -175,11 +175,11 @@ const dialogValueUpdate = val => {
 
 const actualizarTrabajo = async (trabajo, index) => {
   
-
   // Preparamos el payload para enviar al API
   const payload = {
     trabajo: trabajo,
   };
+  console.log(payload);
 
   // Si el trabajo es "INSTALACION PASIVOS", añadimos los datos de las mufas
   if (trabajo.nombre === 'INSTALACION PASIVOS' && formState.value.mufas) {
@@ -196,7 +196,7 @@ const actualizarTrabajo = async (trabajo, index) => {
                   
               }
           })
-          
+          console.log(response);          
           
       }else{
           const response = await $api(`/internodal/actualizar-trabajo-avance/${trabajo.id}`, {
@@ -206,6 +206,7 @@ const actualizarTrabajo = async (trabajo, index) => {
                   
               }
           })
+          console.log(response);
           
       }
 

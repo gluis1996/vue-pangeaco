@@ -1,5 +1,9 @@
 <template>
-    <VDialog :model-value="open" max-width="1200" @update:model-value="v => emit('update:open', v)">
+    <VDialog 
+        :model-value="open" 
+        max-width="1200" 
+        @update:model-value="v => emit('update:open', v)"
+    >
         <VCard>
             <VCardTitle class="text-h6">Registrar/Editar Trabajos Asinados al Tecnico</VCardTitle>
 
