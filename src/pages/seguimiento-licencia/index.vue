@@ -1,7 +1,4 @@
 <template>
-    <h5>
-        estramos en la vista de seguiemiento licencias
-    </h5>
     <!-- Loader Global para la página -->
     <VRow class="mb-4">
         <!-- Loader Global para la página -->
@@ -22,6 +19,7 @@
         :items="licenciasDelProyecto"
         :isedit="licenciasDelProyecto.length > 0"
         :minimo="licenciasDelProyecto.length"
+        :user-role="currentUser?.role"
         @save = "crearLicencia"
         @cancel="openLicencia = false"
     />
@@ -38,11 +36,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import Tabla from '@/pages/seguimiento-licencia/components/tabla.vue'
 import DialogLicencia from '@/pages/seguimiento-licencia/components/DialogLicencia.vue'
 import { $api } from '@/utils/api'
+import { currentUser } from '@/composables/useAuth'
 import { definePage } from 'vue-router/auto'
+
+console.log('currentUser', currentUser.value);
 
 
 const listaprogramacion = ref([])
@@ -98,11 +99,16 @@ async function abrirDialogoLicencia(value) {
 async function crearLicencia(data) {
     console.log(data);
     
+    if (data.licencias.length === 0) {
+        snackbar.message = 'No hay licencias para guardar.';
+        snackbar.color = 'error';
+        snackbar.show = true;
+        return;
+    }
+
     if (data.isedit) {
-        console.log('aquí vamos a editar', data.licencias);        
         await editar(data.licencias)
     }else{
-        console.log('aquí vamos a crear', data.licencias);
         await guardar(data.licencias)
     }
 
@@ -125,7 +131,7 @@ const guardar = async (data) => {
 
         if (response.success) {
             snackbar.message = 'Licencias guardadas correctamente.';
-            snackbar.color = 'success';
+            snackbar.color = 'info';
             snackbar.show = true;
             openLicencia.value = false; 
             await cargarProyecto();
@@ -153,8 +159,8 @@ const editar = async (data) => {
         })
 
         if (response.success) {
-            snackbar.message = 'Licencias guardadas correctamente.';
-            snackbar.color = 'success';
+            snackbar.message = 'Licencias actualizadas correctamente.';
+            snackbar.color = 'info';
             snackbar.show = true;
             openLicencia.value = false; 
             await cargarProyecto();
@@ -170,7 +176,7 @@ const editar = async (data) => {
 
 definePage({
     meta: {
-        roles: ['administrador']   // 👈 solo este rol puede entrar
+        roles: ['administrador','agente']   // 👈 solo este rol puede entrar
     },
 })
 

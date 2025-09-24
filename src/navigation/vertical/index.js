@@ -54,7 +54,7 @@ export default [
   },
   {
     title: 'Intermodal',
-    icon: { icon: 'ri-file-text-line' },
+    icon: { icon: 'ri-pin-distance-line' },
     children:[
       {
         title: 'Enlaze Inter. B. I.',
@@ -69,6 +69,11 @@ export default [
       {
         title: 'Licencias',
         to: { name: 'seguimiento-licencia' },
+         roles: ['administrador','agente'],
+      },
+      {
+        title: 'Candados',
+        to: { name: 'candado' },
          roles: ['administrador'],
       }
     ]

@@ -89,18 +89,18 @@ const loading = reactive({
 // Ya no necesitamos los Mocks ni fakeApiCall
 
 const fetchDepartamentos = async () => {
-    loading.departamentos = true
-    departamentos.value = []
-    // 👇 Llamada real a la API
-    const data = await $api('/internodal/listar-departamentos', { method: 'GET' }).catch(() => [])
-    departamentos.value = data.response || []
-    loading.departamentos = false
+    try {
+        loading.departamentos = true
+        departamentos.value = []
+        const data = await $api('/internodal/listar-departamentos', { method: 'GET' }).catch(() => [])
+        departamentos.value = data.response || []
+    } finally {
+        loading.departamentos = false
+    }
 }
 
 const onDepartamentoSelected = async (depId) => {
     // Limpiamos los niveles inferiores
-    console.log(depId);
-    
     selectedProvincia.value = null
     selectedDistrito.value = null
 
@@ -116,18 +116,18 @@ const onDepartamentoSelected = async (depId) => {
     }
 
     // Si no, cargamos el siguiente nivel (provincia)
-    loading.provincias = true
-    provincias.value = []
-    // 👇 Llamada real a la API
-    const data = await $api(`/internodal/listar-provincia/${depId}`, { method: 'GET' }).catch(() => [])
-    provincias.value = data.response || []
-    loading.provincias = false
-    step.value = 1 // Avanzamos al siguiente paso
+    try {
+        loading.provincias = true
+        provincias.value = []
+        const data = await $api(`/internodal/listar-provincia/${depId}`, { method: 'GET' }).catch(() => [])
+        provincias.value = data.response || []
+        step.value = 1 // Avanzamos al siguiente paso
+    } finally {
+        loading.provincias = false
+    }
 }
 
 const onProvinciaSelected = async (provId) => {
-    console.log(provId);
-    
     selectedDistrito.value = null
 
     if (!provId) {
@@ -142,13 +142,15 @@ const onProvinciaSelected = async (provId) => {
     }
 
     // Si no, cargamos el siguiente nivel (distrito)
-    loading.distritos = true
-    distritos.value = []
-    // 👇 Llamada real a la API
-    const data = await $api(`/internodal/listar-distrito/${provId}`, { method: 'GET' }).catch(() => [])
-    distritos.value = data.response || []
-    loading.distritos = false
-    step.value = 2 // Avanzamos al siguiente paso
+    try {
+        loading.distritos = true
+        distritos.value = []
+        const data = await $api(`/internodal/listar-distrito/${provId}`, { method: 'GET' }).catch(() => [])
+        distritos.value = data.response || []
+        step.value = 2 // Avanzamos al siguiente paso
+    } finally {
+        loading.distritos = false
+    }
 }
 
 const onDistritoSelected = (distId) => {
@@ -193,8 +195,6 @@ watch(() => props.modelValue, async (newId, oldId) => {
 
 async function rehidratarSeleccion(id) {
   if (!id) return
-    console.log('id de sdasd', id);
-    
   // Asegurarnos de que los departamentos estén cargados
   if (!departamentos.value.length) {
     await fetchDepartamentos()
@@ -202,21 +202,16 @@ async function rehidratarSeleccion(id) {
 
   // 👇 Llamada real a la API para obtener la jerarquía
   const response = await $api(`/internodal/rehidratar-ubicacion/${id}`, { method: 'GET' }).catch(() => null)
-  const data = response.response[0]
-  console.log(data);
-  
+  const data = response?.response?.[0]
   if (!data || !data.depId) {
     console.error(`No se pudo rehidratar la ubicación para el ID: ${id}`)
     return
   }
 
   const { depId, provId, distId } = data
-  console.log('response a ', depId, provId, distId);
   
   // Si encontramos el departamento, procedemos a cargar y seleccionar en cascada
   if (depId) {
-    console.log('rehidratarSeleccion', depId);
-    
     selectedDepartamento.value = depId
     await onDepartamentoSelected(depId) // Carga provincias y avanza al step 1
     selectedProvincia.value = provId

@@ -18,8 +18,6 @@
         class="ma-1" size="small" 
         :color="item.total_licencias > 0 ? 'warning' : 'primary'"
         @click="$emit('licencia', item)">{{ item.total_licencias > 0 ? 'Editar' : 'Licencia' }}</VBtn>
-      <VBtn density="compact" class="ma-1" size="small" color="error" @click="$emit('delete-proyecto', item.id_proyecto)">Eliminar
-      </VBtn>
     </template>
   </VDataTable>
 </template>

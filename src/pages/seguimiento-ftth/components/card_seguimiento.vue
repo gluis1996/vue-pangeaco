@@ -4,7 +4,7 @@
       <!-- Cabecera que ocupa todo el ancho -->
       <div class="mb-3">
         <h6 class="text-h6 text-wrap">
-            <strong>{{ props.lista_seguimiento.nodo }} - {{ props.lista_seguimiento.region }} - {{ props.lista_seguimiento.dpto }} - {{ props.lista_seguimiento.nodo_concentrador }}</strong>
+            <strong>{{ props.lista_seguimiento.nodo }} - {{ props.lista_seguimiento.region }} - {{ props.lista_seguimiento.dpto }}  {{ props.lista_seguimiento.nodo_concentrador }}</strong>
         </h6>
       </div>
 

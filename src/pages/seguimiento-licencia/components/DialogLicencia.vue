@@ -27,8 +27,6 @@
                 type="number"
                 :min="minimo"
                 density="compact"
-                :hint="modoSimple ? 'Modo simple (sin estado/fechas).' 
-                                    : 'Modo completo (con estado y fechas si hay datos).'"
                 persistent-hint
                 class="flex-grow-1"
                 />
@@ -61,16 +59,25 @@
               />
             </VCol>
             <VCol cols="12" md="2" class="d-flex align-center justify-center">
-              <VBtn icon="ri-delete-bin-6-line" variant="text" color="error" @click="quitar(i)" />
+              <!-- Solo mostramos el botón si el rol es 'administrador' -->
+              <VBtn 
+                v-if="props.userRole === 'administrador'"
+                icon="ri-delete-bin-6-line" 
+                variant="text" color="error" 
+                @click="quitar(i)" />
             </VCol>
           </template>
 
           <!-- Modo COMPLETO: todos los campos -->
           <template v-else>
             <VCol cols="12" md="1">
-              <VTextField v-model.number="fila.id" label="ID" type="number" density="compact" hide-details readonly/>
+              <!-- Reemplazamos el VTextField por un simple label -->
+              <div class="d-flex flex-column" style="height: 40px; justify-content: center;">
+                <div class="text-caption text-disabled">ID</div>
+                <div class="font-weight-medium">{{ fila.id || 'Nuevo' }}</div>
+              </div>
             </VCol>
-            <VCol cols="12" md="2">
+            <VCol cols="12" md="3">
                 <UbicacionSelect v-model.trim="fila.nombre_distrito" :readonly="fila.estado_expediente === 'entregado'"/>
             </VCol>
             <VCol cols="12" md="2">
@@ -111,7 +118,12 @@
                 hide-details
                 :readonly="fila.estado_expediente === 'entregado'"
               />
-              <VBtn icon="ri-delete-bin-6-line" variant="text" color="error" @click="quitar(i)" :disabled="fila.estado_expediente === 'entregado'" />
+              <!-- Solo mostramos el botón si el rol es 'administrador' y no está entregado -->
+              <VBtn 
+                v-if="props.userRole === 'administrador'"
+                icon="ri-delete-bin-6-line" 
+                variant="text" color="error" 
+                @click="quitar(i)" :disabled="fila.estado_expediente === 'entregado'" />
             </VCol>
           </template>
         </VRow>
@@ -135,6 +147,7 @@ const props = defineProps({
   data:         { type: Object,  default: () => ({}) },
   items:        { type: Array,   default: () => [] }, // ← lista inicial del padre
   isedit:{ type: Boolean, default: false },
+  userRole: { type: String, default: '' },
   minimo: { type: Number, default: 0 },
 })
 const emit = defineEmits(['update:open', 'cancel', 'save'])

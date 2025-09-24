@@ -1,4 +1,4 @@
-<template>
+<template>  
   <VRow class="mb-4">
     <!-- Loader Global para la página -->
     <VOverlay
@@ -12,13 +12,51 @@
             size="64"
         />
     </VOverlay>
-    <VCol cols="12">
+    <VCol cols="12" md="1">
       <VBtn color="primary" variant="tonal" @click="open = true">+</VBtn>
+    </VCol>
+
+    <!-- Filtros para la tabla -->
+    <VCol cols="12" md="3">
+      <VTextField
+        v-model="searchQuery"
+        label="Buscar por IP, Nodo, EECC..."
+        density="compact"
+        clearable
+        append-inner-icon="ri-search-line"
+      />
+    </VCol>
+    <VCol cols="12" md="2">
+      <VSelect
+        v-model="selectedEECC"
+        :items="listaEECCs"
+        label="Filtrar por EECC"
+        density="compact"
+        clearable
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VSelect
+        v-model="selectedRegion"
+        :items="options.regiones"
+        label="Filtrar por Región"
+        density="compact"
+        clearable
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VSelect
+        v-model="selectedStatus"
+        :items="['Con Trabajos', 'Sin Trabajos', 'Asignados', 'Sin Asignar']"
+        label="Filtrar por Estado"
+        density="compact"
+        clearable
+      />
     </VCol>
   </VRow>
 
   <Tabla
-    :listaproyecto="listaprogramacion"
+    :listaproyecto="filteredListaprogramacion"
     @editarProyecto="abrirDialogEditar"
     @asignar-proyecto="abrirDialogoAsignar"
     @verTrabajos="abrirTrabajos"
@@ -96,7 +134,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import RegistroDialog from '@/pages/intermodal-base-interna/components/dialog.vue'
 import DialogTrabajos from '@/pages/intermodal-base-interna/components/DialogTrabajos.vue'
 import DialogAsignar from '@/pages/intermodal-base-interna/components/DialogAsignar.vue'
@@ -122,6 +160,12 @@ const proyectoParaAsignar = ref(null)   // datos para el diálogo de asignación
 const datosParaEditar = ref({})         // datos para el diálogo de edición
 const trabajosParaDialogo = ref([])     // datos para el diálogo de trabajos
 const isPageLoading = ref(false)
+
+// --- Refs para los filtros ---
+const searchQuery = ref('')
+const selectedEECC = ref(null)
+const selectedRegion = ref(null)
+const selectedStatus = ref(null)
 
 onMounted(cargarProyecto)
 
@@ -172,6 +216,59 @@ async function cargarProyecto () {
     isPageLoading.value = false;
   }
 }
+
+// --- Propiedades Computadas para los Filtros ---
+
+const listaEECCs = computed(() => {
+  if (!listaprogramacion.value) return []
+  // Creamos un Set para tener valores únicos y luego lo convertimos a array
+  const eeccs = new Set(listaprogramacion.value.map(item => item.eecc))
+  return Array.from(eeccs).filter(Boolean) // filter(Boolean) elimina nulos o vacíos
+})
+
+const filteredListaprogramacion = computed(() => {
+  let items = [...listaprogramacion.value]
+
+  // 1. Filtrar por texto de búsqueda
+  if (searchQuery.value) {
+    const lowerCaseQuery = searchQuery.value.toLowerCase()
+    items = items.filter(item => 
+      (item.ip?.toLowerCase() || '').includes(lowerCaseQuery) ||
+      (item.nodo?.toLowerCase() || '').includes(lowerCaseQuery) ||
+      (item.eecc?.toLowerCase() || '').includes(lowerCaseQuery)
+    )
+  }
+
+  // 2. Filtrar por EECC seleccionada
+  if (selectedEECC.value) {
+    items = items.filter(item => item.eecc === selectedEECC.value)
+  }
+
+  // 3. Filtrar por Región seleccionada
+  if (selectedRegion.value) {
+    items = items.filter(item => item.region === selectedRegion.value)
+  }
+
+  // 4. Filtrar por estado de las acciones
+  if (selectedStatus.value) {
+    switch (selectedStatus.value) {
+      case 'Con Trabajos':
+        items = items.filter(item => Number(item.total_proyectos) > 0)
+        break
+      case 'Sin Trabajos':
+        items = items.filter(item => Number(item.total_proyectos) === 0)
+        break
+      case 'Asignados':
+        items = items.filter(item => item.asigando !== null)
+        break
+      case 'Sin Asignar':
+        items = items.filter(item => item.asigando === null)
+        break
+    }
+  }
+
+  return items
+})
 
 /* ====== Abrir Dialogo de Edición ====== */
 async function abrirDialogEditar(id) {
