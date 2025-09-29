@@ -67,13 +67,8 @@ export default [
          roles: ['administrador','tecnico','agente'],
       },
       {
-        title: 'Licencias',
-        to: { name: 'seguimiento-licencia' },
-         roles: ['administrador','agente'],
-      },
-      {
-        title: 'Candados',
-        to: { name: 'candado' },
+        title: 'tramos',
+        to: { name: 'tramos' },
          roles: ['administrador'],
       }
     ]

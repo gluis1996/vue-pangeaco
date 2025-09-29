@@ -63,9 +63,14 @@ const props = defineProps({
         default: 'distrito', // 'departamento', 'provincia', 'distrito'
         validator: v => ['departamento', 'provincia', 'distrito'].includes(v),
     },
+    nameFormat: {
+        type: String,
+        default: 'full', // 'full' o 'short'
+        validator: v => ['full', 'short'].includes(v),
+    },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'selection-changed'])
 
 const step = ref(0) // 0: dep, 1: prov, 2: dist
 
@@ -92,7 +97,7 @@ const fetchDepartamentos = async () => {
     try {
         loading.departamentos = true
         departamentos.value = []
-        const data = await $api('/internodal/listar-departamentos', { method: 'GET' }).catch(() => [])
+        const data = await $api('/internodal/ubicacion/listar-departamentos', { method: 'GET' }).catch(() => [])
         departamentos.value = data.response || []
     } finally {
         loading.departamentos = false
@@ -112,6 +117,10 @@ const onDepartamentoSelected = async (depId) => {
     // Si el nivel es 'departamento', emitimos y terminamos.
     if (props.level === 'departamento') {
         emit('update:modelValue', depId)
+        emit('selection-changed', {
+            id: depId,
+            name: finalSelectionText.value,
+        })
         return
     }
 
@@ -119,7 +128,7 @@ const onDepartamentoSelected = async (depId) => {
     try {
         loading.provincias = true
         provincias.value = []
-        const data = await $api(`/internodal/listar-provincia/${depId}`, { method: 'GET' }).catch(() => [])
+        const data = await $api(`/internodal/ubicacion/listar-provincia/${depId}`, { method: 'GET' }).catch(() => [])
         provincias.value = data.response || []
         step.value = 1 // Avanzamos al siguiente paso
     } finally {
@@ -138,6 +147,10 @@ const onProvinciaSelected = async (provId) => {
     // Si el nivel es 'provincia', emitimos y terminamos.
     if (props.level === 'provincia') {
         emit('update:modelValue', provId)
+        emit('selection-changed', {
+            id: provId,
+            name: finalSelectionText.value,
+        })
         return
     }
 
@@ -145,7 +158,7 @@ const onProvinciaSelected = async (provId) => {
     try {
         loading.distritos = true
         distritos.value = []
-        const data = await $api(`/internodal/listar-distrito/${provId}`, { method: 'GET' }).catch(() => [])
+        const data = await $api(`/internodal/ubicacion/listar-distrito/${provId}`, { method: 'GET' }).catch(() => [])
         distritos.value = data.response || []
         step.value = 2 // Avanzamos al siguiente paso
     } finally {
@@ -155,17 +168,28 @@ const onProvinciaSelected = async (provId) => {
 
 const onDistritoSelected = (distId) => {
     emit('update:modelValue', distId) // Emitimos el ID final
+    emit('selection-changed', {
+        id: distId,
+        name: finalSelectionText.value,
+    })
 }
 
 const finalSelectionText = computed(() => {
     const dep = departamentos.value.find(d => d.id_dep === selectedDepartamento.value)?.nombre
-    if (props.level === 'departamento' && dep) return dep
+    if (!dep) return null
 
     const prov = provincias.value.find(p => p.id_prov === selectedProvincia.value)?.nombre
-    if (props.level === 'provincia' && prov) return `${dep} > ${prov}`
-
     const dist = distritos.value.find(d => d.id_dist === selectedDistrito.value)?.nombre
-    if (props.level === 'distrito' && dist) return `${dep} > ${prov} > ${dist}`
+
+    if (props.nameFormat === 'short') {
+        if (props.level === 'distrito' && dist) return dist
+        if (props.level === 'provincia' && prov) return prov
+        if (props.level === 'departamento' && dep) return dep
+    } else { // 'full' format
+        if (props.level === 'distrito' && dist) return `${dep} > ${prov} > ${dist}`
+        if (props.level === 'provincia' && prov) return `${dep} > ${prov}`
+        if (props.level === 'departamento' && dep) return dep
+    }
 
     return null
 })
@@ -175,6 +199,7 @@ const resetSelection = () => {
     selectedProvincia.value = null
     selectedDistrito.value = null
     emit('update:modelValue', null)
+    emit('selection-changed', null)
     step.value = 0
 }
 
@@ -201,7 +226,7 @@ async function rehidratarSeleccion(id) {
   }
 
   // 👇 Llamada real a la API para obtener la jerarquía
-  const response = await $api(`/internodal/rehidratar-ubicacion/${id}`, { method: 'GET' }).catch(() => null)
+  const response = await $api(`/internodal/ubicacion/rehidratar-ubicacion/${id}`, { method: 'GET' }).catch(() => null)
   const data = response?.response?.[0]
   if (!data || !data.depId) {
     console.error(`No se pudo rehidratar la ubicación para el ID: ${id}`)

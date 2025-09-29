@@ -7,19 +7,20 @@
   >
     <VCard>
       <VCardTitle class="text-h6 d-flex justify-center">
-        Agregamos/Editamos Lista de Licencias
+        Agregamos/Editamos Lista de Licencias 
       </VCardTitle>
 
       <VCardText>
-        <div class="text-center mb-4">
-          <div class="text-body-2">Proyecto #{{ id_proyecto ?? '—' }}</div>
-          <div class="text-subtitle-2">
-            {{ data?.nodo }}/{{ data?.nodo_concentrador }}/{{ data?.enlace }}
+        <VForm ref="formRef">
+          <div class="text-center mb-4">
+            <div class="text-body-2">Proyecto #{{ id_proyecto ?? '-' }}</div>
+            <div class="text-subtitle-2">
+              {{ data?.nodo_origen }}/{{ data?.nodo_destino }}/{{ data?.estado }}
+            </div>
           </div>
-        </div>
 
-        <!-- Controles: cantidad + acciones -->
-        <VRow class="mb-2 align-center">
+          <!-- Controles: cantidad + acciones -->
+          <VRow class="mb-2 align-center">
             <VCol cols="12" md="8" class="d-flex align-center">
                 <VTextField
                 v-model.number="cantidad"
@@ -85,7 +86,6 @@
                 v-model.trim="fila.estado_expediente"
                 label="Estado"
                 density="compact"
-                hide-details
                 :items="['pendiente','entregado','pendiente firma']"
                 :readonly="fila.estado_expediente === 'entregado'"
               />
@@ -95,8 +95,11 @@
                 v-model="fila.fecha_ingreso"
                 label="Ingreso"
                 type="date"
+                :rules="[
+                  v => fila.estado_expediente !== 'entregado' || !!v || 'Requerido si es entregado',
+                  v => !fila.fecha_vigencia || !v || new Date(v) < new Date(fila.fecha_vigencia) || 'La fecha de ingreso debe ser anterior a la fecha de vigencia'
+                ]"
                 density="compact"
-                hide-details
                 :readonly="fila.estado_expediente === 'entregado'"
               />
             </VCol>
@@ -105,8 +108,11 @@
                 v-model="fila.fecha_vigencia"
                 label="Vigencia"
                 type="date"
+                :rules="[
+                  v => fila.estado_expediente !== 'entregado' || !!v || 'Requerido si es entregado',
+                  v => !fila.fecha_ingreso || !v || new Date(v) > new Date(fila.fecha_ingreso) || 'La fecha de vigencia debe ser posterior a la fecha de ingreso'
+                ]"
                 density="compact"
-                hide-details
                 :readonly="fila.estado_expediente === 'entregado'"
               />
             </VCol>
@@ -127,6 +133,7 @@
             </VCol>
           </template>
         </VRow>
+        </VForm>
       </VCardText>
 
       <VCardActions class="justify-end">
@@ -140,10 +147,10 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import UbicacionSelect from '@/pages/intermodal-base-interna/components/UbicacionSelect.vue'
-import { VSelect } from 'vuetify/components'
+import { VSelect, VForm } from 'vuetify/components'
 const props = defineProps({
   open:         { type: Boolean, default: false },
-  id_proyecto:  { type: Number,  default: null },
+  id_proyecto:  { type: Number,  default: 0 },
   data:         { type: Object,  default: () => ({}) },
   items:        { type: Array,   default: () => [] }, // ← lista inicial del padre
   isedit:{ type: Boolean, default: false },
@@ -155,6 +162,7 @@ const emit = defineEmits(['update:open', 'cancel', 'save'])
 /* -------- Estado -------- */
 const cantidad = ref(0)
 const filas    = ref([])
+const formRef = ref(null)
 
 /* -------- Modo simple/completo --------
    simple = NO hay datos iniciales
@@ -231,13 +239,18 @@ function quitar(i) {
 }
 
 /* -------- Guardar -------- */
-function onGuardar() {
-  // En modo simple sólo enviamos nombre + observación (y el id_proyecto)
+async function onGuardar() {
+  if (!formRef.value) return
+
+  const { valid } = await formRef.value.validate()
+
+  if (!valid) return // Si el formulario no es válido, detenemos la ejecución aquí.
+
   // En modo completo enviamos todos los campos
   const licencias = filas.value.map(f => {
     const base = {
       id: f.id ?? null,
-      id_proyecto: f.id_proyecto ?? props.id_proyecto ?? null,
+      id_tramo: f.id_proyecto ?? props.id_proyecto ?? null,
       nombre_distrito: (f.nombre_distrito ?? '').toString().trim(),
       observacion: (f.observacion ?? '').toString().trim(),
     }

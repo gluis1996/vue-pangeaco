@@ -9,10 +9,15 @@
     </VRow>
   </VCardText>
 
-  <VDataTable :headers="headers" :items="items" :search="search" density="compact" :items-per-page="20"
+  <VDataTable 
+    :headers="headers" 
+    :items="items" 
+    :search="search" 
+    density="compact" 
+    :items-per-page="20"
     class="text-no-wrap">
     <!-- Columna de acción (slot por key) -->
-    <template #item.id_proyecto="{ item }">      
+    <template #item.acciones="{ item }">      
       <VBtn 
         density="compact" 
         class="ma-1" size="small" 
@@ -20,6 +25,7 @@
         @click="$emit('licencia', item)">{{ item.total_licencias > 0 ? 'Editar' : 'Licencia' }}</VBtn>
     </template>
   </VDataTable>
+  
 </template>
 
 <script setup>
@@ -30,20 +36,27 @@ const emit = defineEmits(['licencia',])
 const search = ref('')
 
 const headers = [
-  { title: "eecc", key: "eecc" },
-  { title: "origen", key: "nodo" },
-  { title: "destino", key: "nodo_concentrador" },
-  { title: "fase", key: "desplieges_router" },
-  { title: "enlace", key: "enlace" },
-  { title: "acciones", key: "id_proyecto" },
+  { title: "id", key: "id" },
+  { title: "ID Proyecto", key: "id_proyecto" },
+  { title: "ip_tramo", key: "ip_tramo" },
+  { title: "Nombre Tramo", key: "nombre_tramo" },
+  { title: "Origen", key: "nodo_origen" },
+  { title: "Destino", key: "nodo_destino" },
+  { title: "estado", key: "estado" },
+  { title: "Asignado", key: "asignado" },
+  { title: "Acciones", key: "acciones" },
 ]
 
-const items = computed(() => (props.listaproyecto ?? []).map(r => ({
-  eecc: r.eecc,
-  nodo: r.nodo,
-  nodo_concentrador: r.nodo_concentrador,
-  desplieges_router: r.desplieges_router,
-  enlace: r.enlace,
-  total_licencias: r.total_licencias,  id_proyecto: r.id, // <- value del slot
+const items = computed(()=> (props.listaproyecto ?? []).map(r => ({
+  id: r.id,
+  id_proyecto: r.id_proyecto,
+  ip_tramo: r.ip_tramo,
+  nombre_tramo: r.nombre_tramo,
+  nodo_origen: r.nodo_origen,
+  nodo_destino: r.nodo_destino,
+  estado: r.estado,
+  asignado: r.asignado === 1 || r.asignado === true,
+  // El valor para el slot de acciones puede ser cualquier cosa, usualmente el ID del item.
+  acciones: r.id, 
 })))
 </script>

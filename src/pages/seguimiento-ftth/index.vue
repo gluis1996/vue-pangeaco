@@ -1,6 +1,6 @@
 <template>
     <!-- Loader Global para la página -->
-    <VOverlay
+    <VOverlay 
         v-model="isPageLoading"
         class="align-center justify-center"
         persistent
@@ -20,7 +20,7 @@
         <VCol cols="12" md="5">
             <VTextField
                 v-model="searchQuery"
-                label="Buscar por IP, Nodo, EECC..."
+                label="Buscar por Principal, Tramo, EECC..."
                 placeholder="Escribe para filtrar..."
                 append-inner-icon="ri-search-line"
                 single-line
@@ -39,8 +39,18 @@
             />
         </VCol>
 
+        <!-- Filtro por Estado de Asignación -->
+        <VCol cols="12" sm="6" md="2">
+            <VSelect
+                v-model="selectedStatus"
+                :items="['Asignados', 'Sin Asignar']"
+                label="Estado"
+                density="compact"
+                clearable
+            />
+        </VCol>
         <!-- Menú de Ordenamiento -->
-        <VCol cols="12" sm="6" md="4">
+        <VCol cols="12" sm="6" md="2">
             <VSelect
                 v-model="sortBy"
                 :items="opcionesOrden"
@@ -64,8 +74,10 @@
         <!-- Tarjetas renderizadas -->
         <VCol cols="12" lg="4" v-for="list in processedList">
             <card_seguimiento 
-            :lista_seguimiento="list" 
-            @cargar_detalle="listar_detalle"
+              :lista_seguimiento="list" 
+              :user-role="userRole"
+              @cargar_detalle="listar_detalle"
+              @cargar_licencia="recibirIdDesdeTabla"
             />
         </VCol>
     </VRow>
@@ -74,147 +86,82 @@
     <DialogRegistrarAvance 
         v-model:is-dialog-visible="isDialogVisible"
         :detalle-data="detalleData"
+        @trabajoActualizado="mostrarNotificacion"
         @datosActualizados="listar_asignaciones"
     />
 
+      <DialogLicencia 
+        v-model:open="openLicencia" 
+        :id_proyecto="idSeleccionado" 
+        :items="licenciasDelProyecto"
+        :isedit="licenciasDelProyecto.length > 0" 
+        :minimo="licenciasDelProyecto.length" 
+        :user-role="currentUser?.role"
+        :data="lista_data" @save="crearLicencia" @cancel="openLicencia = false" />
 
+    <!-- Snackbar para notificaciones -->
+    <VSnackbar
+        v-model="snackbar.show"
+        :color="snackbar.color"
+        :timeout="3000"
+        location="top right"
+    >
+        {{ snackbar.message }}
+    </VSnackbar>
+
+ 
 </template>
 
 <script setup>
 
-import { onMounted, ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { currentUser, initUser, logout as doLogout } from '@/composables/useAuth'
-import { $api } from '@/utils/api';
 import DialogRegistrarAvance from '@/pages/seguimiento-ftth/components/DialogRegistrarAvance.vue'
+import DialogLicencia from '@/pages/seguimiento-licencia/components/DialogLicencia.vue'
 import card_seguimiento from '@/pages/seguimiento-ftth/components/card_seguimiento.vue'
 import { VCol, VRow } from 'vuetify/components';
+import { useSeguimiento } from './useSeguimiento.js';
+import { useAvanceDialog } from './useAvanceDialog.js';
+import { useSnackbar } from './useSnackbar.js';
+import { useTramoDialog } from '@/pages/tramos/useTramoDialog.js';
+ 
+const userRole = computed(() => currentUser.value?.role || 'agente') // Rol por defecto seguro
 
+// Usamos los composables para obtener la lógica y el estado
+const { snackbar, mostrarNotificacion } = useSnackbar();
 
-const name = computed(() => currentUser.value?.role || currentUser.value?.role || 'role')
-
-const lista_asignacion = ref([])
-
-// Refs para controlar el diálogo y almacenar los datos
-const isDialogVisible = ref(false)
-const detalleData = ref(null)
-const isPageLoading = ref(false) // Ref para el loader global
-const searchQuery = ref('') // 2. Variable para el texto de búsqueda
-
-// --- Nuevos refs para filtros y ordenamiento ---
-const selectedEECC = ref(null) // Para el filtro de EECC
-const sortBy = ref('update_at') // Criterio de ordenamiento por defecto
-const sortDesc = ref(true) // Orden descendente por defecto (más nuevos primero)
-const opcionesOrden = [
-    { text: 'Última Actualización', value: 'update_at' },
-    { text: 'Mayor Avance', value: 'avance_total' },
-    { text: 'Prioridad', value: 'prioridad' },
-]
-
-onMounted(listar_asignaciones);
-
-async function listar_asignaciones() {
-    isPageLoading.value = true; // Activamos el loader
-    try {
-        console.log(name.value);
-        const response = await $api(`internodal/listar-trabajos-asigandos/`, {
-            method: 'GET',
-            onResponseError({ response }) {
-                
-            }
-        })
-        
-        lista_asignacion.value = response.result || [];
-        
-    } catch (error) {
-        console.error("Error al listar asignaciones:", error);
-        lista_asignacion.value = []; // Aseguramos que sea un array en caso de error
-    } finally {
-        isPageLoading.value = false; // Desactivamos el loader, tanto si hubo éxito como si hubo error
-    }
-}
-
-// --- Propiedades Computadas para la Lógica de UI ---
-
-// Extrae una lista única de EECCs de los datos cargados
-const listaEECCs = computed(() => {
-    const eeccs = new Set(lista_asignacion.value.map(item => item.eecc));
-    return Array.from(eeccs).filter(Boolean); // Filtra nulos o vacíos
-});
-
-// Propiedad computada principal que aplica filtros y ordenamiento
-const processedList = computed(() => {
-    let items = [...lista_asignacion.value];
-
-    // 1. Aplicar filtro de texto
-    if (searchQuery.value) {
-        const lowerCaseQuery = searchQuery.value.toLowerCase();
-        items = items.filter(item => {
-            const ip = item.ip?.toLowerCase() || '';
-            const eecc = item.eecc?.toLowerCase() || '';
-            const nodo = item.nodo?.toLowerCase() || '';
-            const nodoConcentrador = item.nodo_concentrador?.toLowerCase() || '';
-            return ip.includes(lowerCaseQuery) || eecc.includes(lowerCaseQuery) || nodo.includes(lowerCaseQuery) || nodoConcentrador.includes(lowerCaseQuery);
-        });
-    }
-
-    // 2. Aplicar filtro por EECC
-    if (selectedEECC.value) {
-        items = items.filter(item => item.eecc === selectedEECC.value);
-    }
-
-    // 3. Aplicar ordenamiento
-    if (sortBy.value) {
-        items.sort((a, b) => {
-            let valA = a[sortBy.value];
-            let valB = b[sortBy.value];
-
-            // Manejo especial para fechas (cadenas)
-            if (sortBy.value === 'update_at') {
-                valA = new Date(valA);
-                valB = new Date(valB);
-            }
-
-            if (valA < valB) return sortDesc.value ? 1 : -1;
-            if (valA > valB) return sortDesc.value ? -1 : 1;
-            return 0;
-        });
-    }
-    return items;
-});
-
-const listar_detalle = async (item) => {
-    isPageLoading.value = true; // Activamos el loader global
-    try {
-        const response = await $api(`internodal/listar-trabajos-tecnico-mufas/${item}`, {
-            method: 'GET',
-            onResponseError({ response }) {
-                // El error ya será capturado por el bloque catch
-                console.error('Error en la respuesta del API:', response._data);
-            }
-        });
-
-        // Normalizamos la respuesta del API antes de pasarla al diálogo.
-        // Renombramos la clave 'trabajo' a 'trabajos' para que coincida con lo que espera el diálogo.
-        if (response.trabajo) {
-            response.trabajos = response.trabajo;
-            delete response.trabajo;
-        }
-        
-        detalleData.value = response;
-        isDialogVisible.value = true;
-    } catch (error) {
-        console.error('Error al listar el detalle:', error);
-        // Aquí podrías mostrar una notificación de error al usuario
-    } finally {
-        isPageLoading.value = false; // Desactivamos el loader en cualquier caso
-    }
-}
+const {
+    isPageLoading,
+    searchQuery,
+    selectedEECC,
+    selectedStatus,
+    sortBy,
+    sortDesc,
+    opcionesOrden,
+    listaEECCs,
+    processedList,
+    listar_asignaciones
+} = useSeguimiento();
+const { isDialogVisible, detalleData, listar_detalle } = useAvanceDialog(isPageLoading, listar_asignaciones);
 
 definePage({
     meta: {
         roles: ['administrador','tecnico','agente'],   // 👈 solo este rol puede entrar
     },
-})
+});
 
+const idSeleccionado = ref(null);
+
+const {
+  recibirIdDesdeTabla,
+  crearLicencia,
+  openLicencia,
+  lista_data,
+  licenciasDelProyecto,
+} = useTramoDialog({
+  snackbar,
+  idSeleccionado,
+  onSuccess: listar_asignaciones,
+});
 
 </script>

@@ -5,7 +5,7 @@
         @update:model-value="v => emit('update:open', v)"
     >
         <VCard>
-            <VCardTitle class="text-h6">Registrar/Editar Trabajos Asinados al Tecnico</VCardTitle>
+            <VCardTitle class="text-h6">Registrar/Editar Trabajos Asinados al Tecnico {{ idProyecto }}</VCardTitle>
 
             <FormTrabajos v-model="form" :options="props.options" />
 
@@ -23,7 +23,7 @@ import FormTrabajos from '@/pages/intermodal-base-interna/components/FormTrabajo
 
 const props = defineProps({
   open: { type: Boolean, default: false },
-  idProyecto: { type: [String, Number], required: true },
+  idProyecto: { type: [String, Number], default: 0 },
   initialData: { type: Object, default: () => ({}) },
   isEdit: { type: Boolean, default: false },
   options: { type: Object, default: () => ({}) },
@@ -66,7 +66,7 @@ watch(
 )
 
 function onSubmit() {
-    emit('submit', { id_proyecto: props.idProyecto, isEdit: props.isEdit, ...form })
+    emit('submit', { id_tramos: props.idProyecto, isEdit: props.isEdit, ...form })
     emit('update:open', false)
 }
 

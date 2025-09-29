@@ -137,23 +137,23 @@ watch(() => props.open, (isOpen) => {
 
 // --- Emisores de eventos para cada sección ---
 async function onUpdateProyecto() {
-    await handleUpdate('proyecto', form.proyecto, `/internodal/actualizar-proyecto/${props.idProyecto}`)
+    await handleUpdate('proyecto', form.proyecto, `/internodal/proyecto/actualizar-proyecto/${props.idProyecto}`)
 }
 
 async function onUpdateDiseno() {
-    await handleUpdate('diseño', form.diseno, `/internodal/actualizar-diseno/${props.idProyecto}`)
+    await handleUpdate('diseño', form.diseno, `/internodal/diseno/actualizar-diseno/${props.idProyecto}`)
 }
 
 async function onUpdateIntegracion() {
-    await handleUpdate('integración', form.integracion, `/internodal/actualizar-integracion/${props.idProyecto}`)
+    await handleUpdate('integración', form.integracion, `/internodal/integracion/actualizar-integracion/${props.idProyecto}`)
 }
 
 async function onUpdateCaPex() {
-    await handleUpdate('PEX', form.capex, `/internodal/actualizar-capex/${props.idProyecto}`)
+    await handleUpdate('PEX', form.capex, `/internodal/capex/actualizar-capex/${props.idProyecto}`)
 }
 
 async function onUpdatePex() {
-    await handleUpdate('PEX', form.pex, `/internodal/actualizar-pex/${props.idProyecto}`)
+    await handleUpdate('PEX', form.pex, `/internodal/pex/actualizar-pex/${props.idProyecto}`)
 }
 
 /**

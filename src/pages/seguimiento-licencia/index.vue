@@ -66,7 +66,7 @@ onMounted(cargarProyecto)
 async function cargarProyecto() {
     isPageLoading.value = true;
     try {
-        const response = await $api('internodal/listar-proyecto', { method: 'GET' })
+        const response = await $api('internodal/tramo-salto/listar-tramos', { method: 'GET' })
         listaprogramacion.value = response.rows
     } catch (error) {
         console.error(error)
@@ -88,11 +88,7 @@ async function abrirDialogoLicencia(value) {
     })
     
     console.log('la cantidad de esto ses ', reponse.response.length);
-    
-    // Aquí deberías cargar las licencias existentes para este proyecto
-    // y asignarlas a `licenciasDelProyecto`. Por ahora, lo dejamos vacío.
     licenciasDelProyecto.value = reponse.response || [] // Resetear o cargar datos
-
     openLicencia.value = true;
 }
 
@@ -105,7 +101,6 @@ async function crearLicencia(data) {
         snackbar.show = true;
         return;
     }
-
     if (data.isedit) {
         await editar(data.licencias)
     }else{
