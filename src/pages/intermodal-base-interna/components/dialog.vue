@@ -61,7 +61,7 @@ const defaultForms = () => ({
   proyecto: {
     eecc: '', prioridad: '', nodo: '', uips: null,
     region: '', departamento: '', nodo_concentrador: '',
-    desplieges_router: '', enlace: '', comercial: '',
+    desplieges_router: '', enlace: '', comercial: '',tipo_enlace: '',
   },
   diseno: {
     estado_diseño: '', distancia: '', aereo: '', sub_c_red: '', sub_s_red: '', tramo: '',
@@ -81,7 +81,7 @@ const defaultForms = () => ({
 const form = reactive(defaultForms())
 
 const FIELDS_PROYECTO = [
- 'eecc', 'prioridad', 'nodo', 'uips', 'region', 'departamento', 'nodo_concentrador'
+ 'eecc', 'prioridad', 'nodo', 'uips', 'region', 'departamento', 'nodo_concentrador','tipo_enlace'
 ]
 
 /* -------- reset al abrir -------- */

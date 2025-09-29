@@ -29,7 +29,7 @@
             </VCol>
 
             <VCol cols="12" md="2">
-                <VSelect v-model="formLocal.nodo_concentrador" :items="options.nodosConcentrador" label="Nodo concentrador"
+                <NodoSelect v-model="formLocal.nodo_concentrador" :items="options.nodos" :label="'Nodo Concentrador'" 
                 :rules="[req]" density="compact" />
             </VCol>
 
@@ -46,6 +46,12 @@
             <VCol cols="12" md="4">
                 <DynamicStateInput v-model="formLocal.comercial" label="Comercial" :items="['STAND BY', 'OK']" />
             </VCol>
+            
+            <VCol cols="12" md="2">
+                <VSelect v-model="formLocal.tipo_enlace" :items="['Tramos', 'Directo']" label="Tramos?"
+                density="compact" />
+            </VCol>
+
             <VDivider />
         </VRow>
     </v-card-text>
