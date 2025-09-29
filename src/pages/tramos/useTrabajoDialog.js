@@ -24,7 +24,7 @@ export function useTrabajoDialog(option) {
         { method: "GET" }
       );
 
-      if (response.trabajo) {
+      if (response.mensaje) {
         response.trabajos = response.trabajo;
         delete response.trabajo;
       }

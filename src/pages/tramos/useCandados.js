@@ -30,7 +30,14 @@ export function useCandados(opciones) {
         method: "POST",
         body: data,
       });
-      console.log("respuesta al guardar candados:", response);
+      if (response.message === "Candado registrado correctamente") {
+        openCandados.value = false;
+        if (onSuccess) {
+          await onSuccess(); // ✨ Llamamos al callback
+        }
+      } else {
+        console.log("Error al guardar candados:", response.error);
+      }
     } catch (error) {
       console.log(error);
     }
