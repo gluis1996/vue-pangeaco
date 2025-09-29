@@ -357,6 +357,7 @@
     "isAuth": true,
     "logout": true,
     "role": true,
-    "setUser": true
+    "setUser": true,
+    "useNavigation": true
   }
 }

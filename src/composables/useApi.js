@@ -31,7 +31,10 @@ export const useApi = createFetch({
         parsedData = destr(data)
       }
       catch (error) {
-        console.error(error)
+        // Solo logear errores críticos, no errores de parsing menores
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Error parsing response data:', error)
+        }
       }
       
       return { data: parsedData, response }

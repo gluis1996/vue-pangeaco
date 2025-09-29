@@ -3,7 +3,7 @@
     <!-- Campo de autocompletado optimizado para buscar y seleccionar nodos -->
     <VAutocomplete
       v-model="selectedNodo"
-      label="Buscar nodo"
+      :label="props.label"
       :items="filteredNodos"
       item-title="display_text"
       item-value="nombre_nodo"
@@ -63,6 +63,7 @@
 <script setup>
 import { ref, onMounted, reactive, computed, watch, shallowRef, nextTick } from 'vue'
 import { $api } from '@/utils/api'
+import { label } from '@/views/components/chip/demoCodeChip'
 
 // Función de debounce para optimizar la búsqueda
 const debounce = (func, wait) => {
@@ -89,6 +90,10 @@ const props = defineProps({
   items: {
     type: Array,
     default: null,
+  },
+  label: {
+    type: String,
+    default: 'Nodo',
   },
 })
 
