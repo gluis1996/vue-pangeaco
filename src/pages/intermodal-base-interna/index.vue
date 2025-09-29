@@ -59,6 +59,7 @@
     :listaproyecto="filteredListaprogramacion"
     @editarProyecto="abrirDialogEditar"
     @asignar-proyecto="abrirDialogoAsignar"
+    @tramo="abrirDialogoTramo"
     @verTrabajos="abrirTrabajos"
     @delete-proyecto="abrirDialogoEliminar"
   />
@@ -103,6 +104,16 @@
     @cancel="openAsignar = false"
   />
 
+    <!-- Dialog de Tramos-->
+
+  <DialogTramo
+    v-model:open="openTramo"
+    :idProyecto="idSeleccionado"
+    :tramosDisponibles="tramosDisponibles"
+    @guardar="guardarTramo"
+    @close="openTramo = false"
+  />
+
   <!-- Dialog de Confirmación para ELIMINAR -->
   <VDialog v-model="openEliminar" max-width="500px" persistent>
       <VCard>
@@ -122,6 +133,7 @@
       </VCard>
   </VDialog>
 
+
   <!-- Snackbar para notificaciones -->
   <VSnackbar
       v-model="snackbar.show"
@@ -139,6 +151,7 @@ import RegistroDialog from '@/pages/intermodal-base-interna/components/dialog.vu
 import DialogTrabajos from '@/pages/intermodal-base-interna/components/DialogTrabajos.vue'
 import DialogAsignar from '@/pages/intermodal-base-interna/components/DialogAsignar.vue'
 import DialogEditarProyecto from '@/pages/intermodal-base-interna/components/DialogEditarProyecto.vue'
+import DialogTramo from '@/pages/intermodal-base-interna/components/DialogTramo.vue'
 import Tabla from '@/pages/intermodal-base-interna/components/tabla.vue'
 import { $api } from '@/utils/api'
 import datos from '@/pages/intermodal-base-interna/composables/data'
@@ -153,6 +166,7 @@ const listaprogramacion = ref([])
 const open = ref(false)                 // diálogo de registro
 const openEditar = ref(false)           // diálogo de edición
 const openAsignar = ref(false)          // diálogo de asignación
+const openTramo = ref(false)            // diálogo de tramos
 const openTrabajos = ref(false)
 const openEliminar = ref(false)         // diálogo de eliminación
 const idSeleccionado = ref(null)        // id proyecto para el diálogo
@@ -161,6 +175,7 @@ const datosParaEditar = ref({})         // datos para el diálogo de edición
 const trabajosParaDialogo = ref([])     // datos para el diálogo de trabajos
 const isPageLoading = ref(false)
 
+const tramosDisponibles = ref([])
 // --- Refs para los filtros ---
 const searchQuery = ref('')
 const selectedEECC = ref(null)
@@ -177,10 +192,10 @@ const options = reactive({
   tipos_trabajos: datos.value.rows,
 })
 
-const guardarRegistro = async (payload) => {
+const guardarRegistro = async (payload) => {  
   try {
     isPageLoading.value = true;
-    const response = await $api('internodal/registrar-proyecto',{
+    const response = await $api('internodal/proyecto/registrar-proyecto',{
       method : 'POST',
       body : payload,
       onResponseError({response}){
@@ -208,7 +223,7 @@ const guardarRegistro = async (payload) => {
 async function cargarProyecto () {
   isPageLoading.value = true;
   try {
-    const response = await $api('internodal/listar-proyecto', { method: 'GET' })
+    const response = await $api('internodal/proyecto/listar-proyecto', { method: 'GET' })
     listaprogramacion.value = response.rows
   } catch (error) {
     console.error(error)
@@ -276,7 +291,7 @@ async function abrirDialogEditar(id) {
   idSeleccionado.value = id
   try {
     // Asumimos que tienes un endpoint que devuelve todos los datos de un proyecto
-    const apiResponse = await $api(`internodal/listar-consolidado-proyecto/${id}`, { method: 'GET' })
+    const apiResponse = await $api(`internodal/proyecto/listar-consolidado-proyecto/${id}`, { method: 'GET' })
     
     
     // Transformamos la respuesta: extraemos el primer objeto de cada array.
@@ -451,7 +466,7 @@ async function ejecutarEliminacion() {
 
   try {
     // Reemplaza 'tu-endpoint-de-eliminar' con la URL correcta de tu API
-    const response = await $api(`internodal/eliminar-proyecto/${idSeleccionado.value}`, {
+    const response = await $api(`internodal/proyecto/eliminar-proyecto/${idSeleccionado.value}`, {
       method: 'DELETE',
       onResponseError({ response }) {
         snackbar.message = response._data.message || 'Error en la respuesta del servidor.';
@@ -476,6 +491,59 @@ async function ejecutarEliminacion() {
   }
 }
 
+/* ========================================== */
+/* ====== Gestiones para Tramos ============ */
+/* ========================================== */
+
+async function abrirDialogoTramo (id) {
+  idSeleccionado.value = id;
+  
+  try {
+    // 1. Cargar los trabajos existentes para este proyecto
+    const response = await $api(`internodal/tramo-salto/buscar-siguiente-tramo/${id}`, { method: 'GET' });
+
+    if (!response.success) {
+      snackbar.message = response.error || 'Error al obtener el siguiente tramo.';
+      snackbar.color = 'error';
+      snackbar.show = true;
+      return
+    }
+    openTramo.value = true; // Abrimos el diálogo de confirmación
+    tramosDisponibles.value = response.data;
+  } catch (error) {
+    console.error("Error al cargar los trabajos del proyecto:", error);
+  } finally {
+    isPageLoading.value = false;
+  }
+}
+
+async function guardarTramo(payload){
+  try{
+    const response = await $api('internodal/tramo-salto/registrar-tramo',{
+      method : 'POST',
+      body : payload,
+      onResponseError({response}){
+        console.error(response)
+        snackbar.message = response._data.message || 'Error en la respuesta del servidor.';
+        snackbar.color = 'error';
+        snackbar.show = true;
+      }
+    })
+    if (response.success) {
+      snackbar.message = `Tramo registrado correctamente`
+      snackbar.color = 'info'
+      snackbar.show = true
+    }
+    
+    cargarProyecto();
+  }
+  catch(error){
+    console.error(error)
+  }finally{
+    isPageLoading.value = false;
+    openTramo.value = false;
+  }
+}
 
 definePage({
     meta: {

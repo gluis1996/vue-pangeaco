@@ -3,10 +3,6 @@
         <VRow>
             <!-- Proyecto -->
             <VCol cols="12" md="2">
-                <VTextField v-model="formLocal.ip" label="IP" density="compact" />
-            </VCol>
-
-            <VCol cols="12" md="2">
                 <VSelect v-model="formLocal.eecc" :items="['LARI','DOMINION','LITEYCA','COMFICA','COBRA']" label="EECC" :rules="[req]" density="compact" />
             </VCol>
 
@@ -15,7 +11,7 @@
             </VCol>
 
             <VCol cols="12" md="2">
-                <UbicacionSelect v-model="formLocal.nodo" />
+                <NodoSelect v-model="formLocal.nodo" :items="options.nodos" />
             </VCol>
 
             <VCol cols="12" md="2">
@@ -59,7 +55,7 @@
 import { computed } from 'vue';
 import DynamicStateInput from './DynamicStateInput.vue';
 import UbicacionSelect from './UbicacionSelect.vue';
-
+import NodoSelect from './NodoSelect.vue';
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -70,6 +66,7 @@ const props = defineProps({
     default: () => ({
       regiones: [],
       departamentos: [],
+      nodos: [],
       nodosConcentrador: [],
     }),
   },

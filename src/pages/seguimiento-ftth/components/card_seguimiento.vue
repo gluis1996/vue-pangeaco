@@ -1,10 +1,21 @@
 <template>
   <VCard class="position-relative">
+    <!-- Icono de Completado (100%) en la esquina -->
+    <VIcon
+      v-if="isCompleted"
+      icon="ri-checkbox-circle-fill"
+      color="success"
+      class="position-absolute"
+      style="top: 8px; right: 8px; font-size: 1.5rem;"
+    />
     <VCardText>
       <!-- Cabecera que ocupa todo el ancho -->
       <div class="mb-3">
-        <h6 class="text-h6 text-wrap">
-            <strong>{{ props.lista_seguimiento.nodo }} - {{ props.lista_seguimiento.region }} - {{ props.lista_seguimiento.dpto }}  {{ props.lista_seguimiento.nodo_concentrador }}</strong>
+        <h6 
+          class="text-h6 text-wrap"
+          :class="{ 'text-success': isCompleted }"
+        >
+            <strong>{{ props.lista_seguimiento.principal }} * {{ props.lista_seguimiento.tramo }}</strong>
         </h6>
       </div>
 
@@ -13,7 +24,7 @@
         <!-- Columna Izquierda -->
         <div class="flex-grow-1">
           <div class="text-subtitle-1">
-            {{ props.lista_seguimiento.eecc }} <br> {{ props.lista_seguimiento.ip }}
+            {{ props.lista_seguimiento.eecc }} <br> {{ props.lista_seguimiento.ip_tramo || 'Sin IP asignada' }}
           </div>
           <h5 class="text-primary">
             Ult. Cambio: {{ ultimaActualizacionFormateada }} <br>
@@ -21,8 +32,29 @@
           <div class="text-body-1 mb-3">
             {{ (Number(props.lista_seguimiento.avance_total) * 100).toFixed(2) }}% avanzado
           </div>
-          <VBtn size="small" @click="enviar" class="mt-2">
-            Ver detalle
+          <!-- Botón Herramientas (Técnico y Admin) -->
+          <VBtn 
+            v-if="['administrador', 'tecnico'].includes(props.userRole)"
+            size="small" 
+            @click="enviar" 
+            class="mt-2" 
+            icon="ri-tools-line" :disabled="!(props.lista_seguimiento.total_trabajo > 0)">
+          </VBtn>
+          <!-- Botón Reporte (Agente y Admin) -->
+          <VBtn 
+            v-if="['administrador', 'agente'].includes(props.userRole)"
+            size="small" 
+            @click="enviar_licencia" 
+            class="mt-2 ml-2" 
+            icon="ri-file-list-3-line" :disabled="!(props.lista_seguimiento.cant_licencia > 0)">
+          </VBtn>
+          <!-- Botón Bloquear (Solo Admin) -->
+          <VBtn 
+            v-if="props.userRole === 'administrador'"
+            size="small" 
+            @click="enviar_candado" 
+            class="mt-2 ml-2" 
+            icon="ri-lock-line" :disabled="!(props.lista_seguimiento.total_trabajo > 0)">
           </VBtn>
         </div>
 
@@ -38,7 +70,7 @@
             />
           </div>
           <div class="mt-2">
-            <p class="text-caption mb-0">Tendido {{ (props.lista_seguimiento.av_tendidos) * 100 }}%</p>
+            <p class="text-caption mb-0">Tendido {{ (Number(props.lista_seguimiento.av_tendidos) * 100).toFixed(2) }}%</p>
             <VProgressLinear
               :model-value="Number(props.lista_seguimiento.av_tendidos) * 100"
               color="info"
@@ -71,15 +103,26 @@
 </template>
 
 <script setup>
-import { type } from '@/views/components/alert/demoCodeAlert';
 import { computed } from 'vue';
 
 
 const props = defineProps({
-    lista_seguimiento: {type:Object, default: () => ({})}
+    lista_seguimiento: {type:Object, default: () => ({})},
+    userRole: { type: String, default: 'agente' }
 });
 
-const emit = defineEmits(['cargar_detalle']);
+const emit = defineEmits(['cargar_detalle', 'cargar_licencia','cargar_candado']);
+
+// Propiedad computada para determinar si el tramo está 100% completado en todas sus fases.
+const isCompleted = computed(() => {
+  const item = props.lista_seguimiento;
+  return (
+    Number(item.pct_licencias_entregadas) >= 100 &&
+    Number(item.av_tendidos) >= 1 &&
+    Number(item.pct_pasivos) >= 100 &&
+    Number(item.pct_pruebas) >= 100
+  );
+});
 
 const ultimaActualizacionFormateada = computed(() => {
   const tiempo = props.lista_seguimiento.ultima_actualizacion || '';
@@ -94,6 +137,13 @@ const enviar = () => {
     emit('cargar_detalle', props.lista_seguimiento.id);
 }
 
+const enviar_licencia = () => {
+    emit('cargar_licencia', props.lista_seguimiento);
+}
+
+const enviar_candado = () => {
+    emit('cargar_candado', props.lista_seguimiento.id);
+}
 </script>
 
 <style lang="scss">
