@@ -17,10 +17,10 @@
     <!-- 1. Añadimos el campo de búsqueda -->
     <VRow>
         <!-- Buscador de Texto -->
-        <VCol cols="12" md="5">
+        <VCol cols="12" md="4">
             <VTextField
                 v-model="searchQuery"
-                label="Buscar por Principal, Tramo, EECC..."
+                label="Buscar por Ip, Tramo."
                 placeholder="Escribe para filtrar..."
                 append-inner-icon="ri-search-line"
                 single-line
@@ -29,7 +29,7 @@
         </VCol>
 
         <!-- Filtro por EECC -->
-        <VCol cols="12" sm="6" md="3">
+        <VCol cols="12" sm="6" md="2">
             <VSelect
                 v-model="selectedEECC"
                 :items="listaEECCs"
@@ -49,6 +49,18 @@
                 clearable
             />
         </VCol>
+
+        <!-- Nuevo Filtro por Tiempo de Actualización -->
+        <VCol cols="12" sm="6" md="2">
+            <VSelect
+                v-model="selectedUpdateTime"
+                :items="[{title: 'Actualizado < 24h', value: '< 24h'}, {title: 'Sin actualizar > 24h', value: '> 24h'}]"
+                label="Actualización"
+                density="compact"
+                clearable
+            />
+        </VCol>
+
         <!-- Menú de Ordenamiento -->
         <VCol cols="12" sm="6" md="2">
             <VSelect
@@ -72,12 +84,27 @@
         </VCol>
 
         <!-- Tarjetas renderizadas -->
-        <VCol cols="12" lg="4" v-for="list in processedList">
+        <VCol cols="12" lg="4" v-for="list in itemsList" :key="list.id">
             <card_seguimiento 
               :lista_seguimiento="list" 
               :user-role="userRole"
               @cargar_detalle="listar_detalle"
               @cargar_licencia="recibirIdDesdeTabla"
+            />
+        </VCol>
+
+        <!-- Mensaje si no hay resultados -->
+        <VCol v-if="!isPageLoading && itemsList.length === 0" cols="12" class="text-center">
+            <p>No se encontraron resultados para los filtros seleccionados.</p>
+        </VCol>
+
+        <!-- Controles de Paginación -->
+        <VCol cols="12" class="d-flex justify-center mt-4">
+            <VPagination
+                v-model="currentPage"
+                :length="totalPages"
+                :total-visible="5"
+                v-if="totalPages > 1"
             />
         </VCol>
     </VRow>
@@ -132,14 +159,17 @@ const { snackbar, mostrarNotificacion } = useSnackbar();
 
 const {
     isPageLoading,
+    itemsList,
+    listaEECCs,
     searchQuery,
     selectedEECC,
     selectedStatus,
+    selectedUpdateTime,
     sortBy,
     sortDesc,
     opcionesOrden,
-    listaEECCs,
-    processedList,
+    currentPage,
+    totalPages,
     listar_asignaciones
 } = useSeguimiento();
 const { isDialogVisible, detalleData, listar_detalle } = useAvanceDialog(isPageLoading, listar_asignaciones);
