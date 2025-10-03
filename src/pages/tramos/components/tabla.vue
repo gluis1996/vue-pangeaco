@@ -1,5 +1,5 @@
 <template>
-  <VDataTable :headers="headers" :items="items" density="compact" :items-per-page="20" class="text-no-wrap">
+  <VDataTable :headers="headers" :items="items" density="compact" :items-per-page="10" class="text-no-wrap">
     <!-- Columna de Estado con Chip de color -->
     <template #item.estado="{ item }">
       <VChip :color="item.estado === 'pendiente' ? 'warning' : 'success'" size="small">

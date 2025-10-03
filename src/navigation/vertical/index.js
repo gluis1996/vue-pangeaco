@@ -57,7 +57,7 @@ export default [
     icon: { icon: 'ri-pin-distance-line' },
     children:[
       {
-        title: 'Enlaze Inter. B. I.',
+        title: 'Enlace Inter. B. I.',
         to: { name: 'intermodal-base-interna' },
         roles: ['agente','administrador'],
       },
@@ -69,7 +69,7 @@ export default [
       {
         title: 'tramos',
         to: { name: 'tramos' },
-         roles: ['administrador'],
+         roles: ['administrador','agente'],
       }
     ]
   }

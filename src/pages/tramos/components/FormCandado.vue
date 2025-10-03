@@ -1,6 +1,7 @@
 <template>
   <VCard border flat>
     <VCardText>
+      <h6 class="text-h6 mb-4">Números de Serie</h6>
       <!-- 1. Input para la cantidad -->
       <VTextField
         v-model.number="cantidad"
@@ -11,48 +12,6 @@
         clearable
         class="mb-4"
       />
-
-      <!-- 2. Input para la foto general -->
-      <VFileInput
-        :model-value="fotoFile"
-        label="Foto General de los Candados"
-        accept="image/*"
-        density="compact"
-        prepend-icon="tabler-camera"
-        class="mb-4"
-        @update:model-value="handleFileChange"
-        @click:clear="() => handleFileChange([])"
-      />
-
-      <!-- Previsualización de la foto -->
-      <VImg
-        v-if="fotoPreview"
-        :src="fotoPreview"
-        aspect-ratio="16/9"
-        class="mb-4 border rounded"
-        max-height="200"
-        cover
-        style="cursor: pointer;"
-        @click="isPrevisualizacionDialogVisible = true"
-      />
-
-      <!-- Diálogo para previsualización a pantalla completa -->
-      <VDialog
-        v-model="isPrevisualizacionDialogVisible"
-        max-width="900px"
-      >
-        <VCard>
-          <VCardText class="pa-2">
-            <VImg :src="fotoPreview" max-height="80vh" />
-          </VCardText>
-          <VCardActions>
-            <VSpacer />
-            <VBtn color="primary" @click="isPrevisualizacionDialogVisible = false">
-              Cerrar
-            </VBtn>
-          </VCardActions>
-        </VCard>
-      </VDialog>
 
       <!-- 3. Inputs dinámicos para los números de serie -->
       <VRow v-if="cantidad > 0">
@@ -76,59 +35,23 @@
 </template>
 
 <script setup>
-import { ref, watch, onBeforeUnmount } from 'vue';
+import { ref, watch } from 'vue';
 
 // --- Props y Emits ---
-// Este componente ahora usa dos v-model:
-// 1. `modelValue` para la lista de candados (seriales).
-// 2. `foto` para el archivo de la foto.
 const props = defineProps({
   modelValue: {
     type: Array,
     default: () => [],
   },
-  foto: {
-    type: Object, // Espera un objeto { file: File | null, preview: string | null }
-    default: () => ({ file: null, preview: null }),
-  },
 });
 
-const emit = defineEmits(['update:modelValue', 'update:foto']);
+const emit = defineEmits(['update:modelValue']);
 
 // --- Estado local ---
 const cantidad = ref(0);
 const seriales = ref([]);
-const fotoFile = ref([]); // Para el v-model de VFileInput (siempre espera un array)
-const fotoPreview = ref(null);
-const isPrevisualizacionDialogVisible = ref(false);
-
-// Array para mantener un registro de las URLs de previsualización creadas
-let previewUrl = null; // Solo necesitamos una URL ahora
 
 // --- Lógica ---
-
-function handleFileChange(files) {
-  const file = files[0]; // VFileInput devuelve un array
-
-  // Limpiamos la URL de previsualización anterior si existe
-  if (previewUrl) {
-    URL.revokeObjectURL(previewUrl);
-    previewUrl = null;
-  }
-
-  if (file) {
-    // Si hay un archivo, lo guardamos y creamos una URL de previsualización
-    fotoFile.value = [file];
-    previewUrl = URL.createObjectURL(file);
-    fotoPreview.value = previewUrl;
-    emit('update:foto', { file: file, preview: previewUrl });
-  } else {
-    // Si se limpia el archivo, reseteamos los valores
-    fotoFile.value = [];
-    fotoPreview.value = null;
-    emit('update:foto', { file: null, preview: null });
-  }
-}
 
 // Observador para la cantidad:
 // Cuando el número en "Cantidad de Candados" cambia,
@@ -165,20 +88,4 @@ watch(() => props.modelValue, newModelValue => {
     seriales.value = cleanData;
   }
 }, { immediate: true });
-
-// Observador para la foto que viene del padre
-watch(() => props.foto, newFoto => {
-  // Sincronizamos la previsualización
-  fotoPreview.value = newFoto?.preview || null;
-  fotoFile.value = newFoto?.file ? [newFoto.file] : [];
-}, { immediate: true });
-
-// --- Limpieza ---
-// Es importante liberar las URLs de previsualización para evitar fugas de memoria.
-onBeforeUnmount(() => {
-  if (previewUrl) {
-    URL.revokeObjectURL(previewUrl);
-  }
-});
-
 </script>

@@ -1,7 +1,7 @@
 <template>
   <VDialog
     :model-value="open"
-    max-width="800px"
+    max-width="900px"
     @update:model-value="v => emit('update:open', v)"
   >
     <VCard>
@@ -9,8 +9,17 @@
         {{ isEdit ? 'Editar' : 'Agregar' }} Candados al Tramo #{{ idProyecto }}
       </v-card-title>
       <VCardText>
-        <!-- Usamos v-model para los candados y v-model:foto para la foto -->
-        <FormCandado v-model="candados" v-model:foto="fotoGeneral" />
+        <FormCandado v-model="candados" />
+
+        <VDivider class="my-4" />
+
+        <h6 class="text-h6 mb-4">Foto General de los Candados</h6>
+        
+        <!-- El uploader de fotos ahora vive aquí directamente -->
+        <FotoUploader
+          :initial-foto-url="fotoGeneral.preview"
+          @upload-foto="onUploadFoto"
+        />
       </VCardText>
       <VCardActions class="justify-end">
         <VBtn variant="text" @click="onCancel">
@@ -19,7 +28,6 @@
         <VBtn color="primary" @click="onSave">
           {{ isEdit ? 'Editar' : 'Guardar' }}
         </VBtn>
-
       </VCardActions>
     </VCard>
   </VDialog>
@@ -28,6 +36,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import FormCandado from '../components/FormCandado.vue'
+import FotoUploader from '../components/FotoUploader.vue'
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -40,17 +49,25 @@ const emit = defineEmits(['update:open', 'save', 'cancel'])
 
 // Creamos variables reactivas para los datos del formulario
 const candados = ref([])
-const fotoGeneral = ref({ file: null, preview: null })
+const fotoGeneral = ref({ preview: null })
+
+function onUploadFoto(file) {
+  // Este evento se dispara desde FormCandado con el archivo a subir.
+  // Aquí se llamaría a la API para subir la foto.
+  // Por ahora, simulamos la subida y emitimos un evento 'save' solo para la foto.
+  emit('save', {
+    id_proyecto_tramo: props.idProyecto,
+    foto: file,
+    isEdit: props.isEdit, // Podrías necesitarlo para el endpoint
+  })
+  // Opcional: podrías cerrar el diálogo o mostrar una notificación de éxito aquí.
+}
 
 function onSave() {
   // Emitimos un objeto con todos los datos necesarios
   emit('save', {
     id_proyecto_tramo: props.idProyecto,
     candados: candados.value, // Ahora enviamos la lista completa de objetos
-    // Enviamos el archivo de la foto si existe
-    foto_file: fotoGeneral.value.file,
-    // Si no hay un archivo nuevo pero había una foto antes, no la borramos.
-    // Si el usuario borra la foto, fotoGeneral.preview será null.
     foto_delete: !fotoGeneral.value.preview && props.initialData.some(item => item.foto_url),
     isEdit: props.isEdit,
   })
@@ -76,14 +93,14 @@ watch(() => props.open, (isOpen) => {
     const fotoUrlExistente = props.initialData.find(item => item.foto_url)?.foto_url || null;
 
     // Poblamos el objeto de la foto para la previsualización inicial
+    // Ya no necesitamos el 'file', solo la URL de la foto existente.
     fotoGeneral.value = {
-      file: null, // El archivo no se carga, solo la URL de previsualización
       preview: fotoUrlExistente,
     };
   } else {
     // Limpiamos los datos cuando el diálogo se cierra para el próximo uso.
     candados.value = [];
-    fotoGeneral.value = { file: null, preview: null };
+    fotoGeneral.value = { preview: null };
   }
 }, { immediate: true })
 </script>

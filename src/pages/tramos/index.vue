@@ -29,9 +29,14 @@
     :is-edit="!!(trabajosParaDialogo.trabajos && trabajosParaDialogo.trabajos.length > 0)"
     @submit="onTrabajoDialogSubmit" @cancel="openTrabajos = false" />
 
-  <DialogCandados v-model:open="openCandados" :id-proyecto="idSeleccionado"
-    :is-edit="!!(lista_candado_buscado.length > 0)" :initial-data="lista_candado_buscado"
-    :minimo="lista_candado_buscado.length" @cancel="openCandados = false" @save="registrarCandados" />
+  <DialogCandados 
+    v-model:open="openCandados" 
+    :id-proyecto="idSeleccionado"
+    :is-edit="!!(lista_candado_buscado.length > 0)" 
+    :initial-data="lista_candado_buscado"
+    :minimo="lista_candado_buscado.length" 
+    @cancel="openCandados = false" 
+    @save="registrarCandados" />
 
   <!-- Dialog para ASIGNAR proyecto -->
   <DialogAsignar v-model:open="openAsignar" :proyecto="tramoParaAsignar" @guardar="guardarAsignacion"
@@ -121,6 +126,7 @@ const {
   openCandados
 } = useCandados({
   idSeleccionado,
+  snackbar,
   onSuccess: cargarTramos,
 })
 
