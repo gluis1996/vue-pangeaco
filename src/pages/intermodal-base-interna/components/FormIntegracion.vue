@@ -1,7 +1,7 @@
 <!-- src/pages/intermodal-base-interna/components/FormDiseno.vue -->
 <template>
   <VCardText>
-          <VRow>
+          <VRow class="mt-2">
             <VCol cols="12" md="2">
                 <v-select :items="['FASE 1', 'FASE 2', 'REDISEÑADO', 'NO']" v-model="formLocal.despliege_e_i" label="Despliege E.I." density="compact"></v-select>
             </VCol>

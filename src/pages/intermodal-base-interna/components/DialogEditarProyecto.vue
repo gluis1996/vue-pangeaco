@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, computed } from 'vue'
+import { reactive, watch, computed, ref } from 'vue'
 import { VCardText, VCard, VCardTitle, VCardSubtitle, VCardActions, VBtn, VSnackbar } from 'vuetify/components'
 import FormProyecto from './FormProyecto.vue' // 1. Importar el nuevo componente
 import FormDiseno from './FormDiseno.vue' // 1. Importar el nuevo componente
@@ -131,6 +131,9 @@ watch(() => props.open, (isOpen) => {
         form.integracion = data.integracion || {}
         form.capex = data.capex || {}
         form.pex = data.pex || {}
+    } else {
+        // Limpiar formulario cuando se cierra el diálogo
+        clearForm()
     }
 }, { deep: true, immediate: true })
 
@@ -201,11 +204,26 @@ async function handleUpdate(sectionName, data, url) {
 }
 
 function onCancel() {
+    // Limpiar completamente todos los inputs del formulario
+    clearForm()
+    
     // Si hubo cambios, notificamos al padre para que recargue la tabla.
     if (hasChanges.value) {
         emit('data-updated')
     }
     emit('cancel')
     emit('update:open', false)
+}
+
+// Función para limpiar completamente el formulario
+function clearForm() {
+    Object.assign(form, {
+        proyecto: {},
+        diseno: {},
+        integracion: {},
+        capex: {},
+        pex: {}
+    })
+    hasChanges.value = false
 }
 </script>
