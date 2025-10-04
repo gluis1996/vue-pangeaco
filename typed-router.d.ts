@@ -23,6 +23,7 @@ declare module 'vue-router/auto-routes' {
     'candado': RouteRecordInfo<'candado', '/candado', Record<never, never>, Record<never, never>>,
     'dashboard': RouteRecordInfo<'dashboard', '/dashboard', Record<never, never>, Record<never, never>>,
     'dashboard-components-barras-apiladas': RouteRecordInfo<'dashboard-components-barras-apiladas', '/dashboard/components/barrasApiladas', Record<never, never>, Record<never, never>>,
+    'dashboard-components-card-statistics-sales-overview': RouteRecordInfo<'dashboard-components-card-statistics-sales-overview', '/dashboard/components/CardStatisticsSalesOverview', Record<never, never>, Record<never, never>>,
     'dashboard-components-circule': RouteRecordInfo<'dashboard-components-circule', '/dashboard/components/circule', Record<never, never>, Record<never, never>>,
     'dashboard-components-kpi-card': RouteRecordInfo<'dashboard-components-kpi-card', '/dashboard/components/KpiCard', Record<never, never>, Record<never, never>>,
     'dashboard-components-project-list-actualizacion': RouteRecordInfo<'dashboard-components-project-list-actualizacion', '/dashboard/components/ProjectListActualizacion', Record<never, never>, Record<never, never>>,
