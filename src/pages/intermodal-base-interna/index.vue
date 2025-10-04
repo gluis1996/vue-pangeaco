@@ -171,7 +171,7 @@ const openTrabajos = ref(false)
 const openEliminar = ref(false)         // diálogo de eliminación
 const idSeleccionado = ref(null)        // id proyecto para el diálogo
 const proyectoParaAsignar = ref(null)   // datos para el diálogo de asignación
-const datosParaEditar = ref({})         // datos para el diálogo de edición
+const datosParaEditar = ref([])         // datos para el diálogo de edición
 const trabajosParaDialogo = ref([])     // datos para el diálogo de trabajos
 const isPageLoading = ref(false)
 
@@ -289,6 +289,7 @@ const filteredListaprogramacion = computed(() => {
 async function abrirDialogEditar(id) {
   isPageLoading.value = true;
   idSeleccionado.value = id
+  
   try {
     // Asumimos que tienes un endpoint que devuelve todos los datos de un proyecto
     const apiResponse = await $api(`internodal/proyecto/listar-consolidado-proyecto/${id}`, { method: 'GET' })
@@ -302,6 +303,7 @@ async function abrirDialogEditar(id) {
       capex: apiResponse.capex?.[0] || {},
       pex: apiResponse.pex?.[0] || {},
     }
+    
     datosParaEditar.value = datosFormateados
     openEditar.value = true
     isPageLoading.value = false;

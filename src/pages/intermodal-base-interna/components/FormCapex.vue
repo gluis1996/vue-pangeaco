@@ -303,6 +303,12 @@ const montoTotal = computed(() => {
 watch(montoTotal, (newTotal) => {
   // Formatear a 2 decimales antes de guardar
   const formattedTotal = parseFloat(newTotal.toFixed(2));
-  updateNestedValue('capex.mo', formattedTotal);
+  
+  // Usar el setter del computed en lugar de updateNestedValue para evitar loops
+  if (formLocal.value.capex.mo !== formattedTotal) {
+    const newForm = { ...formLocal.value };
+    newForm.capex = { ...newForm.capex, mo: formattedTotal };
+    formLocal.value = newForm;
+  }
 }, { immediate: true });
 </script>

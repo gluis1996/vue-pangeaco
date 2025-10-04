@@ -60,8 +60,8 @@
 <script setup>
 import { computed } from 'vue';
 import DynamicStateInput from './DynamicStateInput.vue';
-import UbicacionSelect from './UbicacionSelect.vue';
 import NodoSelect from './NodoSelect.vue';
+
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -81,10 +81,15 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const req = v => !!v || 'Requerido'
+
 // Usamos una computed property para el v-model
 const formLocal = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  get: () => {
+    return props.modelValue
+  },
+  set: (value) => {
+    emit('update:modelValue', value)
+  }
 })
 
 </script>

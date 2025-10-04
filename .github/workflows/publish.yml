@@ -35,6 +35,7 @@ jobs:
           sshpass -p ${{secrets.AUTH_PASS}} ssh -o StrictHostKeyChecking=no ${{secrets.AUTH_SERVER}} << EOF
             cd /root/web-pangeaco/
             docker login ghcr.io -u gluis1996 -p ${{ secrets.TOKEN_PRO }}
+            # Forzar descarga de la imagen más reciente
             docker pull ghcr.io/gluis1996/vue-pangeaco:latest
             docker stop vue-pangeaco || true
             docker rm vue-pangeaco || true
@@ -42,4 +43,9 @@ jobs:
             --name vue-pangeaco \
             -p 4545:80 \
             ghcr.io/gluis1996/vue-pangeaco:latest
+            # Limpiar solo imágenes sin referencias (más seguro)
+            docker image prune -f
+            # Opcional: mostrar imágenes restantes para debugging
+            echo "Imágenes actuales:"
+            docker images ghcr.io/gluis1996/vue-pangeaco
           EOF

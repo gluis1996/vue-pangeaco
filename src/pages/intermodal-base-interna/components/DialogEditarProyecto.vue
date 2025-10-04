@@ -2,7 +2,7 @@
     <VDialog v-model="openLocal" max-width="1200" :retain-focus="false">
         <VCard>
             <VCardTitle class="text-h6">
-                Editar Registro del Proyecto: {{ form.proyecto.ip || idProyecto }}
+                Editar Registro del Proyecto: {{ idProyecto }}
             </VCardTitle>
             <VCardSubtitle>
                 Guarde los cambios de cada sección de forma independiente.
@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, computed, ref } from 'vue'
+import { watch, computed, ref } from 'vue'
 import { VCardText, VCard, VCardTitle, VCardSubtitle, VCardActions, VBtn, VSnackbar } from 'vuetify/components'
 import FormProyecto from './FormProyecto.vue' // 1. Importar el nuevo componente
 import FormDiseno from './FormDiseno.vue' // 1. Importar el nuevo componente
@@ -117,46 +117,59 @@ const openLocal = computed({
     set: v => emit('update:open', v),
 })
 
-const form = reactive({
+const form = ref({
     proyecto: {}, diseno: {}, integracion: {}, capex: {}, pex: {}
 })
 
 watch(() => props.open, (isOpen) => {
+    
     if (isOpen) {
-        hasChanges.value = false // Reseteamos el estado al abrir
+        hasChanges.value = true // Reseteamos el estado al abrir
+                
+        // LIMPIAR COMPLETAMENTE el form primero
+        form.value = {
+            proyecto: {},
+            diseno: {},
+            integracion: {},
+            capex: {},
+            pex: {}
+        }
+        
         // Usamos JSON.parse/stringify para crear una copia profunda y evitar modificar la prop
         const data = JSON.parse(JSON.stringify(props.initialData))
-        form.proyecto = data.proyecto || {}
-        form.diseno = data.diseno || {}
-        form.integracion = data.integracion || {}
-        form.capex = data.capex || {}
-        form.pex = data.pex || {}
+        
+        // Asignar con spread operator para forzar reactividad
+        form.value.proyecto = { ...data.proyecto } || {}        
+        form.value.diseno = { ...data.diseno } || {}
+        form.value.integracion = { ...data.integracion } || {}
+        form.value.capex = { ...data.capex } || {}
+        form.value.pex = { ...data.pex } || {}
+        
     } else {
         // Limpiar formulario cuando se cierra el diálogo
         clearForm()
     }
 }, { deep: true, immediate: true })
 
-
 // --- Emisores de eventos para cada sección ---
 async function onUpdateProyecto() {
-    await handleUpdate('proyecto', form.proyecto, `/internodal/proyecto/actualizar-proyecto/${props.idProyecto}`)
+    await handleUpdate('proyecto', form.value.proyecto, `/internodal/proyecto/actualizar-proyecto/${props.idProyecto}`)
 }
 
 async function onUpdateDiseno() {
-    await handleUpdate('diseño', form.diseno, `/internodal/diseno/actualizar-diseno/${props.idProyecto}`)
+    await handleUpdate('diseño', form.value.diseno, `/internodal/diseno/actualizar-diseno/${props.idProyecto}`)
 }
 
 async function onUpdateIntegracion() {
-    await handleUpdate('integración', form.integracion, `/internodal/integracion/actualizar-integracion/${props.idProyecto}`)
+    await handleUpdate('integración', form.value.integracion, `/internodal/integracion/actualizar-integracion/${props.idProyecto}`)
 }
 
 async function onUpdateCaPex() {
-    await handleUpdate('PEX', form.capex, `/internodal/capex/actualizar-capex/${props.idProyecto}`)
+    await handleUpdate('capex', form.value.capex, `/internodal/capex/actualizar-capex/${props.idProyecto}`)
 }
 
 async function onUpdatePex() {
-    await handleUpdate('PEX', form.pex, `/internodal/pex/actualizar-pex/${props.idProyecto}`)
+    await handleUpdate('pex', form.value.pex, `/internodal/pex/actualizar-pex/${props.idProyecto}`)
 }
 
 /**
@@ -217,13 +230,13 @@ function onCancel() {
 
 // Función para limpiar completamente el formulario
 function clearForm() {
-    Object.assign(form, {
+    form.value = {
         proyecto: {},
         diseno: {},
         integracion: {},
         capex: {},
         pex: {}
-    })
+    }
     hasChanges.value = false
 }
 </script>
