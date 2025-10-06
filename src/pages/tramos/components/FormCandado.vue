@@ -16,18 +16,27 @@
       <!-- 3. Inputs dinámicos para los números de serie -->
       <VRow v-if="cantidad > 0">
         <VCol
-          v-for="i in cantidad"
-          :key="i"
+          v-for="(item, index) in seriales"
+          :key="index"
           cols="12"
           sm="6"
           md="4"
         >
-          <VTextField
-            v-model="seriales[i - 1].serial"
-            :label="`Serial Candado #${i}`"
-            placeholder="S/N"
-            density="compact"
-          />
+          <div class="d-flex align-center gap-2">
+            <VTextField
+              v-model="item.serial"
+              :label="`Serial Candado #${index + 1}`"
+              placeholder="S/N"
+              density="compact"
+              class="flex-grow-1"
+            />
+            <VBtn
+              color="error"
+              icon="ri-delete-bin-2-line"
+              size="small"
+              @click="eliminarCandado(index, item.id)"
+            />
+          </div>
         </VCol>
       </VRow>
     </VCardText>
@@ -35,7 +44,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { $api } from "@/utils/api";
+import { ref, watch } from "vue";
 
 // --- Props y Emits ---
 const props = defineProps({
@@ -43,9 +53,17 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  idProyectoTramo: {
+    type: [Number, String],
+    default: null,
+  },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits([
+  "update:modelValue",
+  "candado-eliminado",
+  "error-eliminacion",
+]);
 
 // --- Estado local ---
 const cantidad = ref(0);
@@ -56,36 +74,95 @@ const seriales = ref([]);
 // Observador para la cantidad:
 // Cuando el número en "Cantidad de Candados" cambia,
 // se ajusta la cantidad de inputs para los seriales.
-watch(cantidad, newCantidad => {
+watch(cantidad, (newCantidad) => {
   const num = Number(newCantidad) || 0;
 
   // Redimensionamos el array, manteniendo los valores existentes.
   // Ahora cada elemento es un objeto. Los nuevos no tienen 'id'.
-  seriales.value = Array.from({ length: num }, (_, i) => seriales.value[i] || {
-    id: null,
-    serial: '',
-  });
+  seriales.value = Array.from(
+    { length: num },
+    (_, i) =>
+      seriales.value[i] || {
+        id: null,
+        serial: "",
+      }
+  );
 });
 
 // Observador para los seriales:
 // Cuando se escribe en cualquier input de serial,
 // se emite la lista completa y actualizada al componente padre.
-watch(seriales, newSeriales => {
-  emit('update:modelValue', newSeriales);
-}, { deep: true }); // 'deep' es crucial para detectar cambios dentro del array.
+watch(
+  seriales,
+  (newSeriales) => {
+    emit("update:modelValue", newSeriales);
+  },
+  { deep: true }
+); // 'deep' es crucial para detectar cambios dentro del array.
 
 // --- Sincronización con el padre ---
 
 // Observador para el modelValue (datos que vienen del padre):
 // Cuando el padre nos pasa una nueva lista de seriales,
 // actualizamos la cantidad y los inputs locales.
-watch(() => props.modelValue, newModelValue => {
-  // Solo actualizamos si el valor del padre es diferente al local para evitar bucles.
-  if (JSON.stringify(newModelValue) !== JSON.stringify(seriales.value)) {
-    // Hacemos una copia profunda para evitar mutaciones no deseadas
-    const cleanData = JSON.parse(JSON.stringify(newModelValue));
-    cantidad.value = cleanData.length;
-    seriales.value = cleanData;
+watch(
+  () => props.modelValue,
+  (newModelValue) => {
+    // Solo actualizamos si el valor del padre es diferente al local para evitar bucles.
+    if (JSON.stringify(newModelValue) !== JSON.stringify(seriales.value)) {
+      // Hacemos una copia profunda para evitar mutaciones no deseadas
+      const cleanData = JSON.parse(JSON.stringify(newModelValue));
+      cantidad.value = cleanData.length;
+      seriales.value = cleanData;
+    }
+  },
+  { immediate: true }
+);
+
+async function eliminarCandado(index, candadoId) {
+  console.log(`Eliminando candado - Index: ${index}, ID: ${candadoId}`);
+
+  // Si el candado tiene un ID (existe en la BD), intentamos eliminarlo del backend
+  try {
+    // Aquí iría la llamada a la API
+    // await $axios.delete(`/api/candados/${candadoId}`);
+
+    // Emitimos evento de éxito
+    // emit('candado-eliminado', {
+    //   id: candadoId,
+    //   index,
+    //   idProyectoTramo: props.idProyectoTramo
+    // });
+    console.log(`Candado con ID ${candadoId} eliminado del backend`);
+
+    const response = await $api(
+      `/internodal/candado/borrar-candado/${candadoId}`,
+      {
+        method: "DELETE",
+        onResponseError({ response }) {
+          console.log("Error en la respuesta del servidor:", response);
+        },
+      }
+    );
+    console.log("Response:", response);
+  } catch (error) {
+    console.error("Error al eliminar el candado:", error);
+
+    // Si hay error, salimos sin eliminar del array local
+    return;
   }
-}, { immediate: true });
+
+  // Solo llegamos aquí si:
+  // 1. No hay ID (candado nuevo, solo local)
+  // 2. La eliminación del backend fue exitosa
+
+  // Elimina el candado en la posición 'index'
+  seriales.value.splice(index, 1);
+
+  // Actualiza la cantidad automáticamente
+  cantidad.value = seriales.value.length;
+
+  // El watch() detecta el cambio y emite al padre automáticamente
+  console.log(`Candado eliminado. Nueva cantidad: ${cantidad.value}`);
+}
 </script>

@@ -4,6 +4,7 @@ export function useCandados(opciones) {
   const { idSeleccionado, onSuccess, snackbar } = opciones;
   const openCandados = ref(false);
   const lista_candado_buscado = ref([]);
+
   async function abrirCandados(item) {
     console.log("abrir candados para el tramo:", item);
     idSeleccionado.value = item.id;
@@ -18,7 +19,7 @@ export function useCandados(opciones) {
         console.log("Error al obtener candados:", response.error);
       }
       console.log("candados obtenidos:", response.data);
-      lista_candado_buscado.value = response.data;
+      lista_candado_buscado.value = response;
     } catch (error) {
       console.log(error);
     }

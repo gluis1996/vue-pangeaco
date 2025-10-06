@@ -54,7 +54,7 @@
             size="small" 
             @click="enviar_candado" 
             class="mt-2 ml-2" 
-            icon="ri-lock-line" :disabled="!(props.lista_seguimiento.total_trabajo > 0)">
+            icon="ri-lock-line" :disabled="!(props.lista_seguimiento.cant_candado > 0)">
           </VBtn>
         </div>
 
@@ -142,7 +142,7 @@ const enviar_licencia = () => {
 }
 
 const enviar_candado = () => {
-    emit('cargar_candado', props.lista_seguimiento.id);
+    emit('cargar_candado', props.lista_seguimiento);
 }
 </script>
 

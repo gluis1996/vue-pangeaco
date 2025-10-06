@@ -71,6 +71,7 @@ declare module 'vue-router/auto-routes' {
     'second-page': RouteRecordInfo<'second-page', '/second-page', Record<never, never>, Record<never, never>>,
     'seguimiento-ftth': RouteRecordInfo<'seguimiento-ftth', '/seguimiento-ftth', Record<never, never>, Record<never, never>>,
     'seguimiento-ftth-components-card-seguimiento': RouteRecordInfo<'seguimiento-ftth-components-card-seguimiento', '/seguimiento-ftth/components/card_seguimiento', Record<never, never>, Record<never, never>>,
+    'seguimiento-ftth-components-dialog-avance-candado': RouteRecordInfo<'seguimiento-ftth-components-dialog-avance-candado', '/seguimiento-ftth/components/DialogAvanceCandado', Record<never, never>, Record<never, never>>,
     'seguimiento-ftth-components-dialog-registrar-avance': RouteRecordInfo<'seguimiento-ftth-components-dialog-registrar-avance', '/seguimiento-ftth/components/DialogRegistrarAvance', Record<never, never>, Record<never, never>>,
     'seguimiento-ftth-components-tabla': RouteRecordInfo<'seguimiento-ftth-components-tabla', '/seguimiento-ftth/components/tabla', Record<never, never>, Record<never, never>>,
     'seguimiento-licencia': RouteRecordInfo<'seguimiento-licencia', '/seguimiento-licencia', Record<never, never>, Record<never, never>>,

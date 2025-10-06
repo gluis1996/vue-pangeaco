@@ -41,7 +41,7 @@ import FotoUploader from '../components/FotoUploader.vue'
 const props = defineProps({
   open: { type: Boolean, default: false },
   idProyecto: { type: [Number, String], default: 0 },
-  initialData: { type: Array, default: () => [] },
+  initialData: { type: Object, default: () => ({ data: [], foto_general: null }) },
   isEdit: { type: Boolean, default: false },
 })
 
@@ -82,18 +82,19 @@ function onCancel() {
 // 4. Cuando el diálogo se abre, poblamos los datos. Cuando se cierra, los limpiamos.
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
+    // Si initialData tiene la estructura de respuesta API completa
+    const candadosData = props.initialData.data || props.initialData;
+    
     // Mapeamos los datos de los candados (id y serial)
-    candados.value = props.initialData.map(item => ({
+    candados.value = candadosData.map(item => ({
       id: item.id,
       serial: item.serial,
     }));
 
-    // Buscamos la URL de la foto general. Asumimos que si existe,
-    // es la misma para todos los candados del grupo.
-    const fotoUrlExistente = props.initialData.find(item => item.foto_url)?.foto_url || null;
+    // La foto_general está en el nivel raíz de la respuesta API
+    const fotoUrlExistente = props.initialData.foto_general || null;
 
     // Poblamos el objeto de la foto para la previsualización inicial
-    // Ya no necesitamos el 'file', solo la URL de la foto existente.
     fotoGeneral.value = {
       preview: fotoUrlExistente,
     };
