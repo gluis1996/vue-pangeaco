@@ -36,7 +36,8 @@
     :initial-data="lista_candado_buscado"
     :minimo="lista_candado_buscado.length" 
     @cancel="openCandados = false" 
-    @save="registrarCandados" />
+    @save="registrarCandados"
+    @save-foto="registrarFoto" />
 
   <!-- Dialog para ASIGNAR proyecto -->
   <DialogAsignar v-model:open="openAsignar" :proyecto="tramoParaAsignar" @guardar="guardarAsignacion"
@@ -122,6 +123,7 @@ const {
 const {
   abrirCandados,
   registrarCandados,
+  registrarFoto,
   lista_candado_buscado,
   openCandados
 } = useCandados({

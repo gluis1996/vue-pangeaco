@@ -45,30 +45,32 @@ const props = defineProps({
   isEdit: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['update:open', 'save', 'cancel'])
+const emit = defineEmits(['update:open', 'save', 'save-foto', 'cancel'])
 
 // Creamos variables reactivas para los datos del formulario
 const candados = ref([])
 const fotoGeneral = ref({ preview: null })
 
 function onUploadFoto(file) {
-  // Este evento se dispara desde FormCandado con el archivo a subir.
-  // Aquí se llamaría a la API para subir la foto.
-  // Por ahora, simulamos la subida y emitimos un evento 'save' solo para la foto.
-  emit('save', {
+  // ✅ Emite evento específico para subir SOLO la foto
+  emit('save-foto', {
     id_proyecto_tramo: props.idProyecto,
     foto: file,
-    isEdit: props.isEdit, // Podrías necesitarlo para el endpoint
+    isEdit: props.isEdit,
   })
-  // Opcional: podrías cerrar el diálogo o mostrar una notificación de éxito aquí.
+  
+  // Actualiza el preview localmente
+  fotoGeneral.value = {
+    preview: URL.createObjectURL(file),
+    file: file
+  }
 }
 
 function onSave() {
-  // Emitimos un objeto con todos los datos necesarios
+  // ✅ Emite evento específico para guardar SOLO los candados
   emit('save', {
     id_proyecto_tramo: props.idProyecto,
-    candados: candados.value, // Ahora enviamos la lista completa de objetos
-    foto_delete: !fotoGeneral.value.preview && props.initialData.some(item => item.foto_url),
+    candados: candados.value,
     isEdit: props.isEdit,
   })
   emit('update:open', false)
@@ -97,11 +99,12 @@ watch(() => props.open, (isOpen) => {
     // Poblamos el objeto de la foto para la previsualización inicial
     fotoGeneral.value = {
       preview: fotoUrlExistente,
+      file: null // No hay archivo nuevo inicialmente
     };
   } else {
     // Limpiamos los datos cuando el diálogo se cierra para el próximo uso.
     candados.value = [];
-    fotoGeneral.value = { preview: null };
+    fotoGeneral.value = { preview: null, file: null };
   }
 }, { immediate: true })
 </script>

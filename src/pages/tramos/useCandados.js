@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { $api } from "@/utils/api";
 
 export function useCandados(opciones) {
   const { idSeleccionado, onSuccess, snackbar } = opciones;
@@ -62,20 +63,21 @@ export function useCandados(opciones) {
   }
 
   async function registrarCandados(data) {
-    // Si el objeto 'data' contiene 'foto_file', es una subida de foto.
-    if (data.foto) {
-      return registrarFoto(data);
-    }
-
+    // ✅ Solo maneja candados, NO foto
     try {
       const response = await $api("/internodal/candado/registrar-candado", {
         method: "POST",
-        body: data,
+        body: {
+          id_proyecto_tramo: data.id_proyecto_tramo,
+          candados: data.candados,
+          isEdit: data.isEdit,
+        },
       });
+      
       if (response.message === "Candado registrado correctamente") {
         openCandados.value = false;
         if (onSuccess) {
-          await onSuccess(); // ✨ Llamamos al callback
+          await onSuccess();
         }
         snackbar.message = "Candados guardados correctamente.";
         snackbar.color = "info";
@@ -86,13 +88,17 @@ export function useCandados(opciones) {
         snackbar.show = true;
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error al guardar candados:", error);
+      snackbar.message = "Error al guardar los candados.";
+      snackbar.color = "error";
+      snackbar.show = true;
     }
   }
 
   return {
     abrirCandados,
     registrarCandados,
+    registrarFoto,
     lista_candado_buscado,
     openCandados,
   };
