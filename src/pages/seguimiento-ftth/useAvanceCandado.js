@@ -8,33 +8,24 @@ export function useAvanceCandado(opciones) {
   const currentTramoId = ref(null); // ← Agregar esta variable
   
   async function cargarCandado(item) {
-    // Lógica para cargar el candado
-    currentTramoId.value = item.id; // ← Guardar el ID para recargas
+    currentTramoId.value = item.id;
     openDialogCandado.value = true;
-    console.log('🔄 Cargando candados para tramo ID:', item.id);
+    
     try{
-      // Simulamos una llamada a la API
       const response = await $api(`/internodal/candado/buscar-candado/${item.id}`,{
         method: 'GET',
         onResponseError({ response }) {
-          console.error('Error en la respuesta del API:', response._data);
+          // Error manejado por el API
         }
       })
       candadosData.value = response;
-      console.log(response);
     }catch(error){
-        console.log(error);
+      // Error manejado silenciosamente
     }
   }
 
-  // Función para manejar cuando se sube una foto desde el componente
   async function onFotoSubida(payload) {
-    console.log('🔄 onFotoSubida ejecutándose...');
-    console.log('📦 Payload recibido:', payload);
-    
-    // 1. VALIDAR QUE LLEGARON TODOS LOS DATOS NECESARIOS
     if (!payload) {
-      console.error('❌ Error: No se recibió payload');
       if (snackbar) {
         snackbar.add({
           text: 'Error: No se recibieron datos',
@@ -46,7 +37,6 @@ export function useAvanceCandado(opciones) {
 
     const { candadoId, file, serial, id_proyecto_tramo } = payload;
 
-    // 2. VALIDAR CADA CAMPO REQUERIDO
     const validaciones = [
       { campo: 'candadoId', valor: candadoId, tipo: 'number' },
       { campo: 'file', valor: file, tipo: 'object' },
@@ -56,7 +46,6 @@ export function useAvanceCandado(opciones) {
 
     for (const validacion of validaciones) {
       if (!validacion.valor) {
-        console.error(`❌ Error: ${validacion.campo} es requerido`);
         if (snackbar) {
           snackbar.add({
             text: `Error: ${validacion.campo} es requerido`,
@@ -67,9 +56,7 @@ export function useAvanceCandado(opciones) {
       }
     }
 
-    // 3. VALIDAR QUE EL ARCHIVO SEA UNA IMAGEN
     if (!file.type || !file.type.startsWith('image/')) {
-      console.error('❌ Error: El archivo debe ser una imagen');
       if (snackbar) {
         snackbar.add({
           text: 'Error: El archivo debe ser una imagen',
@@ -79,10 +66,8 @@ export function useAvanceCandado(opciones) {
       return;
     }
 
-    // 4. VALIDAR TAMAÑO DEL ARCHIVO (ejemplo: máximo 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      console.error('❌ Error: El archivo es demasiado grande (máximo 5MB)');
       if (snackbar) {
         snackbar.add({
           text: 'Error: El archivo es demasiado grande (máximo 5MB)',
@@ -92,32 +77,17 @@ export function useAvanceCandado(opciones) {
       return;
     }
 
-    // 5. MOSTRAR INFORMACIÓN DETALLADA DE LO QUE SE VA A ENVIAR
-    console.log('✅ Validaciones pasadas. Datos a enviar:');
-    console.log('   📋 Candado ID:', candadoId);
-    console.log('   📷 Archivo:', file.name);
-    console.log('   📏 Tamaño:', (file.size / 1024 / 1024).toFixed(2), 'MB');
-    console.log('   🏷️ Tipo:', file.type);
-    console.log('   🔢 Serial:', serial);
-    console.log('   🎯 Proyecto/Tramo:', id_proyecto_tramo);
-
     try {
-      // 6. PREPARAR FormData PARA ENVÍO
       const formData = new FormData();
       formData.append('foto', file);
       formData.append('candado_id', candadoId);
       formData.append('id_proyecto_tramo', id_proyecto_tramo);
       formData.append('serial', serial);
 
-      console.log('📤 Enviando a API...');
-      
-      // 7. LLAMAR A CALLBACKS DE PROGRESO SI EXISTEN
       if (payload.onProgress) {
         payload.onProgress(0);
       }
 
-      // 8. HACER LA LLAMADA A LA API (descomenta cuando tengas el endpoint)
-      
       const uploadResponse = await $api('/internodal/candado/actualizar-avance-candado', {
         method: 'POST',
         body: formData,
@@ -127,11 +97,7 @@ export function useAvanceCandado(opciones) {
           }
         }
       });
-      
-      console.log('✅ Respuesta de la API:', uploadResponse);
-      
 
-      // 9. SIMULAR PROGRESO POR AHORA
       const simularProgreso = () => {
         let progreso = 0;
         const interval = setInterval(() => {
@@ -143,23 +109,18 @@ export function useAvanceCandado(opciones) {
           if (progreso >= 100) {
             clearInterval(interval);
             
-            // 10. LLAMAR CALLBACK DE ÉXITO
             if (payload.onSuccess) {
               payload.onSuccess();
             }
             
-            // 11. RECARGAR DATOS
             recargarCandados();
             
-            // 12. MOSTRAR NOTIFICACIÓN DE ÉXITO
             if (snackbar) {
               snackbar.add({
                 text: `✅ Foto del candado ${serial} subida correctamente`,
                 color: 'success'
               });
             }
-            
-            console.log('🎉 Subida simulada completada exitosamente');
           }
         }, 500);
       };
@@ -167,14 +128,10 @@ export function useAvanceCandado(opciones) {
       simularProgreso();
       
     } catch (error) {
-      console.error('❌ Error al subir foto:', error);
-      
-      // 13. LLAMAR CALLBACK DE ERROR
       if (payload.onError) {
         payload.onError(error.message || 'Error desconocido');
       }
       
-      // 14. MOSTRAR NOTIFICACIÓN DE ERROR
       if (snackbar) {
         snackbar.add({
           text: 'Error al subir la foto',
@@ -184,21 +141,17 @@ export function useAvanceCandado(opciones) {
     }
   }
 
-  // Función para recargar los candados después de subir una foto
   async function recargarCandados() {
     if (currentTramoId.value) {
       try {
-        console.log('🔄 Recargando candados para tramo:', currentTramoId.value);
-        
         const response = await $api(`/internodal/candado/buscar-candado/${currentTramoId.value}`, {
           method: "GET",
         });
         
         candadosData.value = response;
-        console.log('✅ Candados recargados:', response);
         
       } catch (error) {
-        console.error('❌ Error al recargar candados:', error);
+        // Error manejado silenciosamente
       }
     }
   }
