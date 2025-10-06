@@ -202,7 +202,7 @@ const guardarRegistro = async (payload) => {
         console.error(response)
       }
     })
-    if (response.success && response.response === 'OK') {
+    if (response.success ) {
       snackbar.message = `Proyecto registrado correctamente`
       snackbar.color = 'info'
       snackbar.show = true

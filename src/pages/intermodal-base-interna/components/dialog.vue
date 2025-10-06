@@ -7,10 +7,10 @@
       <VCardTitle class="text-h6">Nuevo Registro</VCardTitle>
       <VForm ref="formRef">        
         <FormProyecto v-model="form.proyecto" :options="options" />
-        <FormDiseno v-model="form.diseno" />
-        <FormIntegracion v-model="form.integracion" />
-        <FormCapex v-model="form" />
-        <FormPex v-model="form.pex" />        
+        <!-- <FormDiseno v-model="form.diseno" /> -->
+        <!-- <FormIntegracion v-model="form.integracion" /> -->
+        <!-- <FormCapex v-model="form" /> -->
+        <!-- <FormPex v-model="form.pex" /> -->        
         <FormSalto v-model="form.saltos" :nodos="options.nodos" />
       </VForm>
 
