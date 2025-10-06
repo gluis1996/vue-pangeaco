@@ -20,7 +20,7 @@
     <VCol cols="12" md="3">
       <VTextField
         v-model="searchQuery"
-        label="Buscar por IP, Nodo, EECC..."
+        label="Buscar en todos los campos..."
         density="compact"
         clearable
         append-inner-icon="ri-search-line"
@@ -244,14 +244,16 @@ const listaEECCs = computed(() => {
 const filteredListaprogramacion = computed(() => {
   let items = [...listaprogramacion.value]
 
-  // 1. Filtrar por texto de búsqueda
+  // 1. Filtrar por texto de búsqueda (busca en todos los campos)
   if (searchQuery.value) {
     const lowerCaseQuery = searchQuery.value.toLowerCase()
-    items = items.filter(item => 
-      (item.ip?.toLowerCase() || '').includes(lowerCaseQuery) ||
-      (item.nodo?.toLowerCase() || '').includes(lowerCaseQuery) ||
-      (item.eecc?.toLowerCase() || '').includes(lowerCaseQuery)
-    )
+    items = items.filter(item => {
+      // Convertir todos los valores del objeto a string y buscar en ellos
+      return Object.values(item).some(value => {
+        if (value === null || value === undefined) return false
+        return String(value).toLowerCase().includes(lowerCaseQuery)
+      })
+    })
   }
 
   // 2. Filtrar por EECC seleccionada
