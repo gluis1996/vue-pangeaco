@@ -290,14 +290,6 @@ function confirmarEnvioFoto(candadoId) {
     onError: (error) => onUploadError(candadoId, error)
   };
   
-  console.log('📤 Emitiendo foto-subida:', {
-    candadoId: payloadToEmit.candadoId,
-    fileName: payloadToEmit.file.name,
-    fileSize: payloadToEmit.file.size,
-    serial: payloadToEmit.serial,
-    id_proyecto_tramo: payloadToEmit.id_proyecto_tramo
-  });
-  
   emit('foto-subida', payloadToEmit);
 }
 
@@ -424,9 +416,9 @@ function limpiarEstadosLocales() {
   candadosLocales.value = [];
 }
 
-// Watch para debug - ver qué datos llegan
+// Watch para detectar cambios en los datos
 watch(() => props.candadosData, (newData) => {
-  console.log('DialogAvanceCandado - Datos recibidos:', newData);
+  // Los datos se actualizan automáticamente
 }, { immediate: true });
 </script>
 
