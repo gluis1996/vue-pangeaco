@@ -2,12 +2,11 @@ import { $api } from "@/utils/api";
 import { reactive, ref } from "vue";
 
 export function useTramoDialog(opciones) {
-  const { idSeleccionado,snackbar, onSuccess } = opciones;
+  const { idSeleccionado,snackbar, onSuccess,isPageLoading } = opciones;
   const openLicencia = ref(false);
   const lista_data = ref([]);
   const licenciasDelProyecto = ref([]);
   const currentUser = ref([]);
-  const isPageLoading = ref(false);
 
 
   async function recibirIdDesdeTabla(value) {

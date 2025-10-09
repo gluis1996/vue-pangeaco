@@ -19,6 +19,7 @@
         <FotoUploader
           :initial-foto-url="fotoGeneral.preview"
           @upload-foto="onUploadFoto"
+          @delete-foto="onDeleteFoto"
         />
       </VCardText>
       <VCardActions class="justify-end">
@@ -45,7 +46,7 @@ const props = defineProps({
   isEdit: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['update:open', 'save', 'save-foto', 'cancel'])
+const emit = defineEmits(['update:open', 'save', 'save-foto', 'cancel', 'delete-foto'])
 
 // Creamos variables reactivas para los datos del formulario
 const candados = ref([])
@@ -74,6 +75,14 @@ function onSave() {
     isEdit: props.isEdit,
   })
   emit('update:open', false)
+}
+
+function onDeleteFoto() {
+  emit('delete-foto', {
+    id_proyecto_tramo: props.idProyecto,
+    isEdit: props.isEdit,
+  })
+  fotoGeneral.value = { preview: null, file: null }
 }
 
 function onCancel() {

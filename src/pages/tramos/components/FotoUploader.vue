@@ -26,16 +26,29 @@
     </VRow>
 
     <!-- Previsualización de la foto -->
-    <VImg
-      v-if="fotoPreview"
-      :src="fotoPreview"
-      aspect-ratio="16/9"
-      class="mb-4 border rounded"
-      max-height="200"
-      cover
-      style="cursor: pointer;"
-      @click="isPrevisualizacionDialogVisible = true"
-    />
+    <div v-if="fotoPreview" class="mb-4">
+      <VImg
+        :src="fotoPreview"
+        aspect-ratio="16/9"
+        class="border rounded"
+        max-height="200"
+        cover
+        style="cursor: pointer;"
+        @click="isPrevisualizacionDialogVisible = true"
+      />
+      <!-- Botón de eliminar foto (solo cuando hay una foto inicial) -->
+      <VBtn
+        v-if="props.initialFotoUrl"
+        color="error"
+        size="small"
+        variant="tonal"
+        class="mt-2"
+        prepend-icon="tabler-trash"
+        @click="eliminarFoto"
+      >
+        Eliminar Foto
+      </VBtn>
+    </div>
 
     <!-- Diálogo para previsualización a pantalla completa -->
     <VDialog
@@ -68,7 +81,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['upload-foto']);
+const emit = defineEmits(['upload-foto', 'delete-foto']);
 
 // --- Estado local ---
 const fotoFile = ref([]); // Para el v-model de VFileInput (siempre espera un array)
@@ -80,6 +93,23 @@ let previewUrl = null;
 function subirFoto() {
   if (fotoFile.value.length > 0)
     emit('upload-foto', fotoFile.value[0]);
+}
+
+function eliminarFoto() {
+  // Limpiar la previsualización
+  fotoPreview.value = null;
+  
+  // Limpiar el archivo seleccionado
+  fotoFile.value = [];
+  
+  // Limpiar la URL de preview si existe
+  if (previewUrl) {
+    URL.revokeObjectURL(previewUrl);
+    previewUrl = null;
+  }
+  
+  // Emitir evento para que el componente padre maneje la eliminación
+  emit('delete-foto');
 }
 
 function handleFileChange(files) {

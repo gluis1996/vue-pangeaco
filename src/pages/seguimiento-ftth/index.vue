@@ -213,7 +213,7 @@ const {
   openDialogCandado,
   candadosData,
   cargarCandado,
-  onFotoSubida,  // ← Agregar esta función
+  onFotoSubida, // ← Agregar esta función
 } = useAvanceCandado({
   snackbar,
   idSeleccionado,
