@@ -7,10 +7,10 @@ export function useProjectStatusTable() {
   async function fetchProyectos() {
     try {
         const response = await $api('/internodal/reporte/avance-promedio-proyecto');
-        // console.log(response);
+        //  
         proyectosData.value = response.data; 
     } catch (error) {
-        console.log(error);
+         
     }
   }
   onMounted(fetchProyectos);

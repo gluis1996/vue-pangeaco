@@ -10,7 +10,7 @@ export function useAsignacion(opciones) {
       `internodal/tramo-salto/buscar-detalle-tramo/${tramo.id}`,
       { method: "GET" }
     );
-    console.log(response);
+     
     tramoParaAsignar.value = response.rows[0]; // Asignamos los datos del tramo seleccionado
     openAsignar.value = true;
   }

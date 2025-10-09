@@ -15,7 +15,7 @@ export function useTrabajoDialog(option) {
   async function abrirTrabajos(data) {
     isPageLoading.value = true;
     idSeleccionado.value = data.id;
-    console.log(data);
+     
 
     try {
       // 1. Cargar los trabajos existentes para este proyecto
@@ -40,7 +40,7 @@ export function useTrabajoDialog(option) {
   }
 
   async function onTrabajoDialogSubmit(payload) {
-    console.log("Payload del diálogo de trabajos:", payload);
+     
 
     isPageLoading.value = true;
     openTrabajos.value = false;
@@ -75,7 +75,7 @@ export function useTrabajoDialog(option) {
           body: trabajosParaActualizar,
         });
       }
-      console.log('este es el trabajo para crear', trabajosParaCrear);
+       
       
       if (trabajosParaCrear.length > 0) {
         await $api("internodal/trabajos/registrar-trabajos", {

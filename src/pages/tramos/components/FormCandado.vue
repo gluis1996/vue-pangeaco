@@ -120,7 +120,7 @@ watch(
 );
 
 async function eliminarCandado(index, candadoId) {
-  console.log(`Eliminando candado - Index: ${index}, ID: ${candadoId}`);
+   
 
   // Si el candado tiene un ID (existe en la BD), intentamos eliminarlo del backend
   try {
@@ -133,18 +133,18 @@ async function eliminarCandado(index, candadoId) {
     //   index,
     //   idProyectoTramo: props.idProyectoTramo
     // });
-    console.log(`Candado con ID ${candadoId} eliminado del backend`);
+     
 
     const response = await $api(
       `/internodal/candado/borrar-candado/${candadoId}`,
       {
         method: "DELETE",
         onResponseError({ response }) {
-          console.log("Error en la respuesta del servidor:", response);
+           
         },
       }
     );
-    console.log("Response:", response);
+     
   } catch (error) {
     console.error("Error al eliminar el candado:", error);
 
@@ -163,6 +163,6 @@ async function eliminarCandado(index, candadoId) {
   cantidad.value = seriales.value.length;
 
   // El watch() detecta el cambio y emite al padre automáticamente
-  console.log(`Candado eliminado. Nueva cantidad: ${cantidad.value}`);
+   
 }
 </script>

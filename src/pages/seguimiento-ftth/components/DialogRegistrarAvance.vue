@@ -209,7 +209,7 @@ const actualizarTrabajo = async (trabajo, index) => {
   const payload = {
     trabajo: trabajo,
   };
-  console.log(payload);
+   
 
   // Si el trabajo es "INSTALACION PASIVOS", añadimos los datos de las mufas
   if (trabajo.nombre === 'INSTALACION PASIVOS' && formState.value.mufas) {
@@ -233,7 +233,7 @@ const actualizarTrabajo = async (trabajo, index) => {
                   
               }
           })
-          console.log(response);          
+                     
           
       }else{
           const response = await $api(`/internodal/trabajos/actualizar-trabajo-avance/${trabajo.id}`, {
@@ -243,7 +243,7 @@ const actualizarTrabajo = async (trabajo, index) => {
                   
               }
           })
-          console.log(response);
+           
           
       }
 

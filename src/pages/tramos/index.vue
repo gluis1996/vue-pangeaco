@@ -224,7 +224,7 @@ const { abrirDialogoAsignarTecnico, asignacionTramoTecnico } =
   });
 
 async function handleConfirmar(datos) {
-  console.log("el open dialog ses ", openDialog.value);
+   
   if (datos.accion === "Asignar_tecnico_tramo") {
     openDialog.value = false;
     asignacionTramoTecnico(datos);

@@ -7,7 +7,7 @@ export function useProjectListActualizacionChart() {
             const response = await $api('/internodal/reporte/reporte-avance-por-contrata');
             projectListActualizacionChart.value = response.data;
         } catch (error) {
-            console.log(error);
+             
         }
     }
     onMounted(fetchProjectListActualizacion);

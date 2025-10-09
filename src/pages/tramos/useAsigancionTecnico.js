@@ -13,8 +13,8 @@ export function useAsigancionTecnico(item) {
   } = item;
 
   async function abrirDialogoAsignarTecnico(item) {
-    console.log("Abriendo diálogo de asignación de técnico...");
-    console.log({ ...item, accion: "Asignar_tecnico_tramo" });
+     
+     
     openDialog.value = false; // Fuerza el cierre
     await nextTick(); // Espera a que Vue procese el DOM
     openDialog.value = true; // Ahora sí lo abre
@@ -25,9 +25,9 @@ export function useAsigancionTecnico(item) {
   }
 
   async function asignacionTramoTecnico(datos) {
-    console.log("Asignando técnico al tramo con datos:", datos);
+     
 
-    console.log("Simulando llamada a API para asignar técnico...");
+     
     isPageLoading.value = true;
 
     try {

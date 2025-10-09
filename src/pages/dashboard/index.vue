@@ -67,7 +67,7 @@ import { useKpiCard } from "./usekpicard.js";
 import { useProjectStatusTable } from "./useProjectStatusTable.js";
 import { useProjectListActualizacion } from "./useProjectListActualizacion.js";
 import { useProjectListActualizacionChart } from "./useProjectsByContractorChart";
-console.log("Dashboard component loaded");
+ 
 
 const { graficosData, proyectosSinAvance } = useDashboard();
 const { kpiData } = useKpiCard();

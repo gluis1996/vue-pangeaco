@@ -16,11 +16,11 @@ export function useCandados(opciones) {
         }
       );
       if (!response.success) {
-        console.log("Error al obtener candados:", response.error);
+         
       }
       lista_candado_buscado.value = response;
     } catch (error) {
-      console.log(error);
+       
     }
 
     openCandados.value = true;

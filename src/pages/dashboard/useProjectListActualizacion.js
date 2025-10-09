@@ -8,7 +8,7 @@ export function useProjectListActualizacion() {
         const response = await $api('/internodal/reporte/avance-promedio-tamos-asignados');
         projectListActualizacion.value = response.data;
     } catch (error) {
-        console.log(error);
+         
         
     }
   }

@@ -43,7 +43,7 @@ import { $api } from '@/utils/api'
 import { currentUser } from '@/composables/useAuth'
 import { definePage } from 'vue-router/auto'
 
-console.log('currentUser', currentUser.value);
+ 
 
 
 const listaprogramacion = ref([])
@@ -76,24 +76,24 @@ async function cargarProyecto() {
 }
 
 async function abrirDialogoLicencia(value) {
-    console.log('abrirDialogoLicencia', value);
+     
     idSeleccionado.value = value.id_proyecto;
     lista_data.value = value;
     const reponse = await $api(`internodal/buscar-licencia/${value.id_proyecto}`, {
         method: 'GET',
         onResponseError({response}){
-            console.log(response);
+             
             
         }
     })
     
-    console.log('la cantidad de esto ses ', reponse.response.length);
+     
     licenciasDelProyecto.value = reponse.response || [] // Resetear o cargar datos
     openLicencia.value = true;
 }
 
 async function crearLicencia(data) {
-    console.log(data);
+     
     
     if (data.licencias.length === 0) {
         snackbar.message = 'No hay licencias para guardar.';

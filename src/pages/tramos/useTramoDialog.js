@@ -31,7 +31,7 @@ export function useTramoDialog(opciones) {
         licenciasDelProyecto.value = [];
       }
     } catch (error) {
-      console.log("Error al buscar licencias:", error);
+       
     } finally {
       isPageLoading.value = false;
     }
@@ -60,14 +60,14 @@ export function useTramoDialog(opciones) {
         method: "POST",
         body: data,
         onResponseError({ response }) {
-          console.log(response);
+           
           snackbar.message =
             response._data?.error || "Ocurrió un error inesperado.";
           snackbar.color = "error";
           snackbar.show = true;
         },
       });
-      console.log(response);
+       
       
       if (response.success) {
         snackbar.message = "Licencias guardadas correctamente.";
@@ -79,7 +79,7 @@ export function useTramoDialog(opciones) {
         }
       }
     } catch (error) {
-      console.log(error);
+       
       snackbar.message = "No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.";
       snackbar.color = "error";
       snackbar.show = true;
@@ -95,7 +95,7 @@ export function useTramoDialog(opciones) {
           method: "PUT",
           body: data,
           onResponseError({ response }) {
-            console.log(response);
+             
             snackbar.message =
               response._data?.error || "Ocurrió un error inesperado.";
             snackbar.color = "error";
@@ -113,7 +113,7 @@ export function useTramoDialog(opciones) {
         }
       }
     } catch (error) {
-      console.log(error);
+       
       snackbar.message = "No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.";
       snackbar.color = "error";
       snackbar.show = true;
