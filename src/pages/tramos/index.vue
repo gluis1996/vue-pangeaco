@@ -67,6 +67,7 @@
   <DialogAsignar
     v-model:open="openAsignar"
     :proyecto="tramoParaAsignar"
+    :ipAsignada="ipAsignada"
     @guardar="guardarAsignacion"
     @cancel="openAsignar = false"
   />
@@ -206,6 +207,7 @@ const {
   guardarAsignacion,
   openAsignar,
   tramoParaAsignar,
+  ipAsignada,
 } = useAsignacion({
   snackbar,
   idSeleccionado,
@@ -224,10 +226,10 @@ const { abrirDialogoAsignarTecnico, asignacionTramoTecnico } =
   });
 
 async function handleConfirmar(datos) {
-   
   if (datos.accion === "Asignar_tecnico_tramo") {
     openDialog.value = false;
     asignacionTramoTecnico(datos);
   }
 }
 </script>
+<!--  -->

@@ -13,8 +13,6 @@ export function useAsigancionTecnico(item) {
   } = item;
 
   async function abrirDialogoAsignarTecnico(item) {
-     
-     
     openDialog.value = false; // Fuerza el cierre
     await nextTick(); // Espera a que Vue procese el DOM
     openDialog.value = true; // Ahora sí lo abre
@@ -25,11 +23,8 @@ export function useAsigancionTecnico(item) {
   }
 
   async function asignacionTramoTecnico(datos) {
-     
-
-     
     isPageLoading.value = true;
-
+    
     try {
       const response = await $api(
         `/internodal/tramo-salto/asignacion-tramo-tecnico/${datos.id}`,
@@ -37,7 +32,8 @@ export function useAsigancionTecnico(item) {
           method: "PUT",
           body: { nombre_tecnico: datos.tecnico },
           onResponseError({ response }) {
-            snackbar.message = response._data.message || "Error al asignar técnico.";
+            snackbar.message =
+              response._data.message || "Error al asignar técnico.";
             snackbar.color = "error";
             snackbar.show = true;
           },

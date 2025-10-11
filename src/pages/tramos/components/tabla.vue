@@ -37,9 +37,9 @@
       <VSelect
         :items="item.lista_tecnicos"
         :item-title="tecnico => `${tecnico.empresa} - ${tecnico.nombre_usuario}`"
-        item-value="nombre_usuario"
-        :model-value="item.asignado_a || null"
-        :placeholder="item.asignado_a ? undefined : 'Seleccionar técnico...'"
+        item-value="user_id"
+        :model-value="parseInt(item.asignado_a) || null"
+        :placeholder="parseInt(item.asignado_a) ? undefined : 'Seleccionar técnico...'"
         density="compact"
         hide-details
         style="min-width: 180px"
@@ -130,7 +130,7 @@ const headers = [
   { title: "Trabajos", key: "cant_trabajo", align: "center" },
   { title: "estado", key: "estado" },
   { title: "Asignado", key: "asignado", align: "center" },
-  { title: "Asignado a", key: "asignado_a" },
+  { title: "responsable", key: "asignado_a" },
   { title: "Acciones", key: "acciones", sortable: false },
 ];
 

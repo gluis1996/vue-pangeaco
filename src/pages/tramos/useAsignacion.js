@@ -1,17 +1,18 @@
 import { ref } from "vue";
 
 export function useAsignacion(opciones) {
-  const { idSeleccionado,snackbar, onSuccess } = opciones;
+  const { idSeleccionado, snackbar, onSuccess } = opciones;
   const openAsignar = ref(false); // Controla si el diálogo está abierto
   const tramoParaAsignar = ref(null); // Almacena los datos del tramo seleccionado
- 
+  const ipAsignada = ref(""); // Almacena la IP asignada temporalmente
   async function abrirDialogoAsignar(tramo) {
     const response = await $api(
       `internodal/tramo-salto/buscar-detalle-tramo/${tramo.id}`,
       { method: "GET" }
     );
-     
+
     tramoParaAsignar.value = response.rows[0]; // Asignamos los datos del tramo seleccionado
+    ipAsignada.value = tramo.ip_tramo || ""; // Inicializamos con la IP actual si existe
     openAsignar.value = true;
   }
 
@@ -54,6 +55,7 @@ export function useAsignacion(opciones) {
     guardarAsignacion,
     openAsignar,
     tramoParaAsignar, // Exponemos el tramo para usarlo en el template
-    snackbar
+    snackbar,
+    ipAsignada,
   };
 }

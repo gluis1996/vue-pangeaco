@@ -86,6 +86,7 @@
         @cargar_detalle="listar_detalle"
         @cargar_licencia="recibirIdDesdeTabla"
         @cargar_candado="cargarCandado"
+        @cargar_fftt="cargarFiabilidad"
       />
     </VCol>
 
@@ -136,6 +137,19 @@
     @update:open="openDialogCandado = $event"
     @cancel="openDialogCandado = false"
   />
+
+  <DialogFiabilidad
+    ref="dialogRef"
+    :open="openFiabilidad"
+    :items="fiabilidadData"
+    :datostables="listaBusqueda"
+    :rol_usuario="userRole"
+    @save_registro="registrarFiabilidad"
+    @update_registro="actualizarFiabilidad"
+    @delete_registro="eliminarFiabilidad"
+    @cancel="openFiabilidad = false"
+  />
+
   <!-- Snackbar para notificaciones -->
   <VSnackbar
     v-model="snackbar.show"
@@ -158,17 +172,19 @@ import DialogRegistrarAvance from "@/pages/seguimiento-ftth/components/DialogReg
 import DialogLicencia from "@/pages/seguimiento-licencia/components/DialogLicencia.vue";
 import card_seguimiento from "@/pages/seguimiento-ftth/components/card_seguimiento.vue";
 import DialogAvanceCandado from "./components/DialogAvanceCandado.vue";
+import DialogFiabilidad from "./components/DialogFiabilidad.vue";
 import { VCol, VRow } from "vuetify/components";
 import { useSeguimiento } from "./useSeguimiento.js";
 import { useAvanceDialog } from "./useAvanceDialog.js";
 import { useSnackbar } from "./useSnackbar.js";
 import { useTramoDialog } from "@/pages/tramos/useTramoDialog.js";
 import { useAvanceCandado } from "./useAvanceCandado.js";
+import { useFiabilidadTecnica } from "./useFiabilidadTecnica.js";
 const userRole = computed(() => currentUser.value?.role || "agente"); // Rol por defecto seguro
 
 // Usamos los composables para obtener la lógica y el estado
 const { snackbar, mostrarNotificacion } = useSnackbar();
-
+const dialogRef = ref(null);
 const {
   isPageLoading,
   itemsList,
@@ -206,6 +222,7 @@ const {
 } = useTramoDialog({
   snackbar,
   idSeleccionado,
+  isPageLoading,
   onSuccess: listar_asignaciones,
 });
 
@@ -217,6 +234,22 @@ const {
 } = useAvanceCandado({
   snackbar,
   idSeleccionado,
+  onSuccess: listar_asignaciones,
+});
+
+const {
+  openFiabilidad,
+  fiabilidadData,
+  listaBusqueda,
+  cargarFiabilidad,
+  registrarFiabilidad,
+  actualizarFiabilidad,
+  eliminarFiabilidad,
+} = useFiabilidadTecnica({
+  snackbar,
+  idSeleccionado,
+  dialogRef,
+  isPageLoading,
   onSuccess: listar_asignaciones,
 });
 </script>

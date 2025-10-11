@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-6">
+  <div class="pa-6" v-if="userRole === 'administrador'">
     <!-- 👉 KPI Cards -->
     <VRow>
       <VCol v-for="(item, index) in kpiData" :key="index">
@@ -51,6 +51,11 @@
       </VCol>
     </VRow>
   </div>
+  <div class="pa-6" v-else>
+      <VAlert type="error" variant="tonal" color="info" icon="mdi-alert">
+        Esta vista no está permitida para usted.
+      </VAlert>
+  </div>
 </template>
 
 <script setup>
@@ -67,7 +72,7 @@ import { useKpiCard } from "./usekpicard.js";
 import { useProjectStatusTable } from "./useProjectStatusTable.js";
 import { useProjectListActualizacion } from "./useProjectListActualizacion.js";
 import { useProjectListActualizacionChart } from "./useProjectsByContractorChart";
- 
+const userRole = computed(() => currentUser.value?.role || "agente"); // Rol por defecto seguro
 
 const { graficosData, proyectosSinAvance } = useDashboard();
 const { kpiData } = useKpiCard();

@@ -61,6 +61,7 @@ import { ref, computed, watch } from 'vue'
 const props = defineProps({
   open: { type: Boolean, default: false },
   proyecto: { type: Object, default: null },
+  ipAsignada: { type: String, default: "" },
 })
 
 const emit = defineEmits(['update:open', 'cancel', 'guardar'])
@@ -70,7 +71,7 @@ const nuevaIp = ref('')
 // Reseteamos la nueva IP cada vez que se abre el diálogo
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
-    nuevaIp.value = ''
+    nuevaIp.value = props.ipAsignada || ''
   }
 })
 
