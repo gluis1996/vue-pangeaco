@@ -50,6 +50,15 @@
         />
       </VCol>
     </VRow>
+
+    <!-- <VRow>
+       <VCol md="4">
+         <CardFases />
+       </VCol>
+       <VCol md="4">
+         <CardFases />
+       </VCol>
+    </VRow> -->
   </div>
   <div class="pa-6" v-else>
       <VAlert type="error" variant="tonal" color="info" icon="mdi-alert">
@@ -67,6 +76,7 @@ import ProjectsByRegionChart from "./components/ProjectsByRegionChart.vue";
 import ProjectListActualizacion from "./components/ProjectListActualizacion.vue";
 import barrasApiladas from "./components/barrasApiladas.vue";
 import CardStatisticsSalesOverview from "./components/CardStatisticsSalesOverview.vue";
+import CardFases from "./components/CardFases.vue";
 import { useDashboard } from "./useDashboard.js";
 import { useKpiCard } from "./usekpicard.js";
 import { useProjectStatusTable } from "./useProjectStatusTable.js";
