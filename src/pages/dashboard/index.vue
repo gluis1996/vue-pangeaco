@@ -51,6 +51,9 @@
       </VCol>
     </VRow>
 
+    <!-- 👉 Dashboard de Metabase -->
+    
+
     <!-- <VRow>
        <VCol md="4">
          <CardFases />
@@ -68,7 +71,10 @@
 </template>
 
 <script setup>
-import { VCol, VRow } from "vuetify/components";
+import { VCol, VRow, VCard, VCardItem, VCardTitle, VCardText, VAlert, VProgressCircular } from "vuetify/components";
+import { ref, computed, onMounted } from 'vue';
+import { currentUser } from "@/composables/useAuth";
+import { $api } from "@/utils/api";
 import KpiCard from "./components/KpiCard.vue";
 import ProjectStatusTable from "./components/ProjectStatusTable.vue";
 import ProjectsByContractorChart from "./components/ProjectsByContractorChart.vue";
@@ -82,7 +88,14 @@ import { useKpiCard } from "./usekpicard.js";
 import { useProjectStatusTable } from "./useProjectStatusTable.js";
 import { useProjectListActualizacion } from "./useProjectListActualizacion.js";
 import { useProjectListActualizacionChart } from "./useProjectsByContractorChart";
+
 const userRole = computed(() => currentUser.value?.role || "agente"); // Rol por defecto seguro
+
+// Estado para el iframe de Metabase
+const metabaseDashboardUrl = ref('');
+const isLoadingMetabase = ref(true);
+const metabaseError = ref(null);
+const metabaseIframe = ref(null);
 
 const { graficosData, proyectosSinAvance } = useDashboard();
 const { kpiData } = useKpiCard();
@@ -111,4 +124,42 @@ const datosParaBarrasApiladas = {
     },
   ],
 };
+
+// Función para cargar el dashboard de Metabase
+const loadMetabaseDashboard = async () => {
+  try {
+    isLoadingMetabase.value = true;
+    metabaseError.value = null;
+    
+    // Llama a la API que proporciona la URL del dashboard
+    const response = await $api('/metabase/dashboard-url', { 
+      method: 'GET' 
+    });
+    
+    if (response && response.url) {
+      metabaseDashboardUrl.value = response.url;
+    } else {
+      metabaseError.value = 'No se pudo obtener la URL del dashboard de Metabase';
+      console.error('Error: Respuesta de API sin URL', response);
+    }
+  } catch (error) {
+    metabaseError.value = 'Error al cargar el dashboard de Metabase';
+    console.error('Error al obtener la URL del dashboard:', error);
+  } finally {
+    isLoadingMetabase.value = false;
+  }
+};
+
+// Función para recargar el dashboard
+const reloadMetabaseDashboard = async () => {
+  if (metabaseIframe.value) {
+    metabaseIframe.value.src = '';
+  }
+  await loadMetabaseDashboard();
+};
+
+// Cargar el dashboard al montar el componente
+onMounted(() => {
+  loadMetabaseDashboard();
+});
 </script>

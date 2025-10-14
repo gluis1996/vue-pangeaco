@@ -10,73 +10,102 @@
 
   <h2>Seguimiento Contrata</h2>
 
-  <!-- 1. Añadimos el campo de búsqueda -->
-  <VRow>
+  <!-- Filtros en primera fila -->
+  <div class="d-flex flex-wrap align-center gap-3 mb-4">
     <!-- Buscador de Texto -->
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="searchQuery"
-        label="Buscar por Ip, Tramo."
-        placeholder="Escribe para filtrar..."
-        append-inner-icon="ri-search-line"
-        single-line
-        density="compact"
-      />
-    </VCol>
+    <VTextField
+      v-model="searchQuery"
+      label="Buscar por Ip, Tramo."
+      placeholder="Escribe para filtrar..."
+      append-inner-icon="ri-search-line"
+      single-line
+      density="compact"
+      class="flex-grow-1"
+      hide-details
+      style="max-width: 450px"
+    />
 
     <!-- Filtro por EECC -->
-    <VCol cols="12" sm="6" md="2">
-      <VSelect
-        v-model="selectedEECC"
-        :items="listaEECCs"
-        label="Filtrar por EECC"
-        density="compact"
-        clearable
-      />
-    </VCol>
+    <VSelect
+      v-model="selectedEECC"
+      :items="listaEECCs"
+      label="Filtrar por EECC"
+      density="compact"
+      clearable
+      hide-details
+      style="min-width: 200px"
+    />
 
-    <!-- Filtro por Estado de Asignación -->
-    <VCol cols="12" sm="6" md="2">
-      <VSelect
-        v-model="selectedStatus"
-        :items="['Asignados', 'Sin Asignar']"
-        label="Estado"
-        density="compact"
-        clearable
-      />
-    </VCol>
+    <!-- Filtro por Estado -->
+    <VSelect
+      v-model="selectedStatus"
+      :items="['Asignados', 'Sin Asignar']"
+      label="Estado"
+      density="compact"
+      clearable
+      hide-details
+      style="min-width: 150px"
+    />
 
-    <!-- Nuevo Filtro por Tiempo de Actualización -->
-    <VCol cols="12" sm="6" md="2">
-      <VSelect
-        v-model="selectedUpdateTime"
-        :items="[
-          { title: 'Actualizado < 24h', value: '< 24h' },
-          { title: 'Sin actualizar > 24h', value: '> 24h' },
-        ]"
-        label="Actualización"
-        density="compact"
-        clearable
-      />
-    </VCol>
+    <!-- Filtro por Actualización -->
+    <VSelect
+      v-model="selectedUpdateTime"
+      :items="[
+        { title: 'Actualizado < 24h', value: '< 24h' },
+        { title: 'Sin actualizar > 24h', value: '> 24h' },
+      ]"
+      label="Actualización"
+      density="compact"
+      clearable
+      hide-details
+      style="min-width: 170px"
+    />
+
+    <!-- Filtro por Despliegue -->
+    <VSelect
+      v-model="selectedDespliegue"
+      :items="listaDespliegues"
+      label="Despliegue"
+      density="compact"
+      clearable
+      hide-details
+      style="min-width: 150px"
+    />
+  </div>
+
+  <!-- Segunda fila de filtros -->
+  <div class="d-flex flex-wrap align-center gap-3 mb-4">
+    <!-- Filtro por Enlace -->
+    <VSelect
+      v-model="selectedEnlace"
+      :items="listaEnlaces"
+      label="Tipo de Enlace"
+      density="compact"
+      clearable
+      hide-details
+      style="min-width: 200px"
+    />
 
     <!-- Menú de Ordenamiento -->
-    <VCol cols="12" sm="6" md="2">
-      <VSelect
-        v-model="sortBy"
-        :items="opcionesOrden"
-        item-title="text"
-        item-value="value"
-        label="Ordenar por"
-        density="compact"
-      >
-        <template #append>
-          <VBtn icon variant="text" @click="sortDesc = !sortDesc">
-            <VIcon :icon="sortDesc ? 'ri-sort-desc' : 'ri-sort-asc'" />
-          </VBtn>
-        </template>
-      </VSelect>
-    </VCol>
+    <VSelect
+      v-model="sortBy"
+      :items="opcionesOrden"
+      item-title="text"
+      item-value="value"
+      label="Ordenar por"
+      density="compact"
+      hide-details
+      style="min-width: 180px"
+    >
+      <template #append>
+        <VBtn icon variant="text" @click="sortDesc = !sortDesc">
+          <VIcon :icon="sortDesc ? 'ri-sort-desc' : 'ri-sort-asc'" />
+        </VBtn>
+      </template>
+    </VSelect>
+  </div>
+
+  <VRow>
 
     <!-- Tarjetas renderizadas -->
     <VCol cols="12" lg="4" v-for="list in itemsList" :key="list.id">
@@ -189,10 +218,14 @@ const {
   isPageLoading,
   itemsList,
   listaEECCs,
+  listaDespliegues,
+  listaEnlaces,
   searchQuery,
   selectedEECC,
   selectedStatus,
   selectedUpdateTime,
+  selectedDespliegue,
+  selectedEnlace,
   sortBy,
   sortDesc,
   opcionesOrden,
