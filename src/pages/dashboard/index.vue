@@ -51,8 +51,7 @@
       </VCol>
     </VRow>
 
-    <!-- 👉 Dashboard de Metabase -->
-    
+
 
     <!-- <VRow>
        <VCol md="4">

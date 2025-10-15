@@ -1,21 +1,16 @@
 import { ref } from "vue";
 
 export function useTrabajoDialog(option) {
-  const { idSeleccionado, onSuccess } = option;
+  const { idSeleccionado, onSuccess, snackbar } = option;
 
   const openTrabajos = ref(false);
   const datosParaEditar = ref({});
   const trabajosParaDialogo = ref([]);
   const isPageLoading = ref(false);
-  const snackbar = reactive({
-    show: false,
-    message: "",
-    color: "",
-  });
+
   async function abrirTrabajos(data) {
     isPageLoading.value = true;
     idSeleccionado.value = data.id;
-     
 
     try {
       // 1. Cargar los trabajos existentes para este proyecto
@@ -24,24 +19,21 @@ export function useTrabajoDialog(option) {
         { method: "GET" }
       );
 
-      if (response.mensaje) {
-        response.trabajos = response.trabajo;
-        delete response.trabajo;
-      }
       trabajosParaDialogo.value = response;
-
+      
       // 3. Abrir el diálogo
       openTrabajos.value = true;
     } catch (error) {
       console.error("Error al cargar los trabajos del proyecto:", error);
+      snackbar.message = "Error al cargar los trabajos del proyecto.";
+      snackbar.color = "error";
+      snackbar.show = true;
     } finally {
       isPageLoading.value = false;
     }
   }
 
   async function onTrabajoDialogSubmit(payload) {
-     
-
     isPageLoading.value = true;
     openTrabajos.value = false;
 
@@ -75,8 +67,7 @@ export function useTrabajoDialog(option) {
           body: trabajosParaActualizar,
         });
       }
-       
-      
+
       if (trabajosParaCrear.length > 0) {
         await $api("internodal/trabajos/registrar-trabajos", {
           method: "POST",
@@ -85,7 +76,7 @@ export function useTrabajoDialog(option) {
       }
 
       snackbar.message = "Trabajos guardados correctamente.";
-      snackbar.color = "info";
+      snackbar.color = "default";
       snackbar.show = true;
 
       if (onSuccess) {

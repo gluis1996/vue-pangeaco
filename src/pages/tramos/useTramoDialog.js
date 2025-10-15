@@ -31,11 +31,12 @@ export function useTramoDialog(opciones) {
         licenciasDelProyecto.value = [];
       }
     } catch (error) {
-       
+      snackbar.message = "No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.";
+      snackbar.color = "error";
+      snackbar.show = true;
     } finally {
       isPageLoading.value = false;
     }
-    openLicencia.value = true;
   }
 
   async function crearLicencia(data) {

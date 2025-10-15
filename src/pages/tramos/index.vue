@@ -44,7 +44,7 @@
     :initial-data="trabajosParaDialogo"
     :is-edit="
       !!(
-        trabajosParaDialogo.trabajos && trabajosParaDialogo.trabajos.length > 0
+        trabajosParaDialogo.trabajo && trabajosParaDialogo.trabajo.length > 0
       )
     "
     @submit="onTrabajoDialogSubmit"
@@ -184,6 +184,7 @@ const {
   openTrabajos,
   trabajosParaDialogo,
 } = useTrabajoDialog({
+  snackbar,
   idSeleccionado, // 4. Pasa la referencia al otro composable también
   onSuccess: cargarTramos, // 2. Se la pasamos al diálogo como el callback `onSuccess`
 });

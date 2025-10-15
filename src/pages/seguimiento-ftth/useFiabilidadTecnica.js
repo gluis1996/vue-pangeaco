@@ -8,8 +8,6 @@ export const useFiabilidadTecnica = (item) => {
   const openFiabilidad = ref(false);
 
   const cargarFiabilidad = async (item) => {
-    console.log(item);
-
     try {
       const response = await $api(
         `internodal/fiabilidad/buscar-fiabilidades/${item.id}`,
@@ -26,12 +24,10 @@ export const useFiabilidadTecnica = (item) => {
         }
       );
       if (!response.success) {
-        console.log(response);
         snackbar.message = "Error al cargar la fiabilidad técnica";
         snackbar.color = "error";
         snackbar.show = true;
       }
-      console.log("los datos para la tabla son : ", response.data);
 
       fiabilidadData.value = item;
       listaBusqueda.value = response.data || [];
@@ -39,7 +35,6 @@ export const useFiabilidadTecnica = (item) => {
       snackbar.color = "default";
       snackbar.show = true;
     } catch (error) {
-      console.log(error);
       snackbar.message = "Error al cargar la fiabilidad técnica";
       snackbar.color = "error";
       snackbar.show = true;
@@ -68,15 +63,12 @@ export const useFiabilidadTecnica = (item) => {
       );
 
       if (!response.success) {
-        console.log(response);
         snackbar.message =
           response.message || "Error al registrar la fiabilidad";
         snackbar.color = "error";
         snackbar.show = true;
         return;
       }
-
-      console.log("Registro exitoso", response);
 
       await recargarDatos();
 
@@ -94,7 +86,6 @@ export const useFiabilidadTecnica = (item) => {
   };
 
   const actualizarFiabilidad = async (data) => {
-    console.log(data);
     isPageLoading.value = true;
 
     try {
@@ -114,15 +105,12 @@ export const useFiabilidadTecnica = (item) => {
       );
 
       if (!response.success) {
-        console.log(response);
         snackbar.message =
           response.message || "Error al actualizar la fiabilidad";
         snackbar.color = "error";
         snackbar.show = true;
         return;
       }
-
-      console.log("Actualización exitosa", response);
 
       await recargarDatos();
 
@@ -140,7 +128,6 @@ export const useFiabilidadTecnica = (item) => {
   };
 
   const eliminarFiabilidad = async (data) => {
-    console.log(data);
     isPageLoading.value = true;
     try {
       const response = await $api(
@@ -157,15 +144,12 @@ export const useFiabilidadTecnica = (item) => {
         }
       );
       if (!response.success) {
-        console.log(response);
         snackbar.message =
           response.message || "Error al eliminar la fiabilidad";
         snackbar.color = "error";
         snackbar.show = true;
         return;
       }
-
-      console.log("Eliminación exitosa", response);
 
       await recargarDatos();
 

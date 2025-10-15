@@ -33,6 +33,9 @@ importers:
       '@sindresorhus/is':
         specifier: 6.3.0
         version: 6.3.0
+      '@superset-ui/embedded-sdk':
+        specifier: ^0.2.0
+        version: 0.2.0
       '@tiptap/extension-highlight':
         specifier: 2.3.0
         version: 2.3.0(@tiptap/core@2.3.0(@tiptap/pm@2.3.0))
@@ -1179,6 +1182,12 @@ packages:
     engines: {node: ^18.12 || >=20.9}
     peerDependencies:
       stylelint: ^16.0.2
+
+  '@superset-ui/embedded-sdk@0.2.0':
+    resolution: {integrity: sha512-n3lCDIfOtCGx8hYUye6rNxX4HI/pjP5u07W4kODt/0DuNl5Dd0+KHnU8ulG0PP2anOrnkc32HENno4Q/Qr5ICw==}
+
+  '@superset-ui/switchboard@0.20.3':
+    resolution: {integrity: sha512-qEMXFwdRLfXug4gXXdBEGpFtBWZoxdZkCJLBVxj1IR8cQvSqjkWAQOzSSYYdcIeREWqi8iP+iK6apNV1ZQCKcA==}
 
   '@tiptap/core@2.3.0':
     resolution: {integrity: sha512-Gk2JN3i5CMkYGmsbyFI7cBUftWa+F7QYmeCLTWfbuy+hCM2OBsnYVKxhggFPGXRL5KLBEgBWeCeWMHfIw3B2MA==}
@@ -5406,6 +5415,13 @@ snapshots:
       postcss-value-parser: 4.2.0
       style-search: 0.1.0
       stylelint: 16.2.1(typescript@5.4.5)
+
+  '@superset-ui/embedded-sdk@0.2.0':
+    dependencies:
+      '@superset-ui/switchboard': 0.20.3
+      jwt-decode: 4.0.0
+
+  '@superset-ui/switchboard@0.20.3': {}
 
   '@tiptap/core@2.3.0(@tiptap/pm@2.3.0)':
     dependencies:

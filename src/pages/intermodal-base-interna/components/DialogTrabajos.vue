@@ -44,8 +44,9 @@ watch(
         if (isOpen) {
             // Cuando se abre el diálogo, lo inicializamos.
             const initial = props.initialData || {};
-            const trabajosExistentes = initial.trabajos || [];
-
+            
+            const trabajosExistentes = initial.trabajo || [];
+            
             // 1. Pre-seleccionar los checkboxes con los trabajos que ya existen.
             const tiposTrabajosIds = trabajosExistentes.map(t => t.tipo_id);
 
